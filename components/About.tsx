@@ -37,7 +37,8 @@ const education = [
 
 const research = {
   role: "研究助理",
-  affiliation: "武汉大学经济与管理学院",
+  period: "2025.02 — 2025.05",
+  affiliation: "武汉大学 管理科学与工程系",
   activities: [
     "用户行为分析",
     "A 股年报文本分析",
@@ -131,9 +132,10 @@ export default function About() {
                 </div>
                 <div className={styles.researchHeader}>
                   <span className={styles.researchRole}>{research.role}</span>
-                  <span className={styles.researchAffiliation}>
-                    @{research.affiliation}
-                  </span>
+                  <span className={styles.period}>{research.period}</span>
+                </div>
+                <div className={styles.researchAffiliation}>
+                  {research.affiliation}
                 </div>
                 <ul className={styles.activityList}>
                   {research.activities.map((activity, index) => (

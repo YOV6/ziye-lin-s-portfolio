@@ -149,8 +149,9 @@
 
 .researchHeader {
   display: flex;
-  flex-direction: column;
-  gap: var(--space-xs);
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--space-sm);
 }
 
 .researchRole {

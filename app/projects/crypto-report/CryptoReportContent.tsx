@@ -176,7 +176,7 @@ export default function CryptoReportContent() {
           Python：113 个 Python 文件，约 1.95 万行 Python 代码。其中包含 18 个配置化蜡烛图形态定义，19 个形态识别初筛模块，4 个行情适配器，30 个测试文件。
         </P>
         <P>
-          SQLite：1 个本地SQLite数据库。
+          SQLite：1 个本地SQLite数据库，存储代码抓取的实时数据。
         </P>
         <P>
           AI LLM：3 个大模型接口，2 个 prompt 模板。
@@ -249,9 +249,12 @@ export default function CryptoReportContent() {
             LLM还分析了疑似形态的失效条件，当“K线回到十字线附近持续横盘，未形成突破”时，该形态失效，需重新判断。
           </p>
           <p className={styles.reportPreviewText}>
-            此外，用户还可以在交互按钮（红框中）中切换不同周期的 K 线。
+            LLM会根据上述信息提供综合分析。在示例中，LLM判断1日线在某区间形成十字孕线形态，但环境配合度不足。十字孕线被大阳线包裹，后续走势存在分歧，环境确认度不足。
           </p>
           <p className={styles.reportPreviewText}>
+            此外，信号卡片还提供在交互按钮（红框处）中切换不同周期的 K 线的功能。
+          </p>
+          <p className={`${styles.reportPreviewText} ${styles.reportPreviewGap}`}>
             下图展示的是信号发现区。用户未主动关注的币种，在经过形态初筛和进一步分析后，如果出现值得注意的结构，就会被展示在这一部分。
           </p>
           <PreviewItem
@@ -272,8 +275,10 @@ export default function CryptoReportContent() {
       <Section>
         <H2 index="06">下一步</H2>
         <P>
-          这条链路不只适用于当前原型，也可以迁移到其他 OHLC 数据驱动的金融场景。对我来说，这个项目最大的价值，是验证了从数据、规则、解释到页面展示的一体化方法。在本次项目开发经验的基础上，我正在开发另一项期货相关的分析流程。
-        </P>        
+          这条链路不只适用于当前原型，也可以迁移到其他 OHLC 数据驱动的金融场景。
+          对我来说，这个项目最大的价值，是验证了从数据、规则、解释到页面展示的一体化方法。  
+        </P>  
+        <P>因此，在本次项目开发经验的基础上，我正在开发另一项期货相关的分析流程。</P>      
       </Section>
 
       {/* 章节六 */}
