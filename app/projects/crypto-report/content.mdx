@@ -1,0 +1,320 @@
+## 为什么开发这个项目
+
+前几年，比特币一次次冲上新闻。价格一路往上冲的时候，所有人都在谈它。跌下来的时候，所有人也都在谈它。这个市场最特别的地方，不只是波动大，而是它天然带着一种很强的戏剧性。你一眼看过去，会觉得它和别的市场差不多，也有开盘、收盘、最高、最低，也有完整的 K 线和 OHLC 数据；可只要真的盯着它看一段时间，就会发现它比很多成熟市场更连续，也更躁动，情绪、叙事和价格经常缠在一起，根本分不开。
+
+我认真开始做这个项目，并不是因为某一次价格异动，也不是因为我想做一个简单的图表页面。真正打动我的是一种很完整的读图方式。那是一位长期研究数字资产图表的人平时使用的方法。先看月线、周线、三日线，判断大背景是不是成立；再回到日线，看结构有没有变化；最后再往更短的周期里收，确认局部位置。那一刻我突然意识到，这件事真正有意思的地方，不在某一个形态本身，而在于它背后其实藏着一套非常稳定的阅读顺序。不同周期并不是各看各的，而是在同一套判断里承担不同的功能。
+
+但问题也恰恰出在这里。越是看上去成熟的方法，越难直接搬进程序。很多蜡烛图知识天然依赖经验，依赖上下文，依赖人对图形细节的整体感觉。同样一组 K 线，不同的人会读出不同的东西。另一层麻烦在于，这套流程又特别重复。切换周期、筛选候选、确认形态、排除干扰，很多步骤并不复杂，真正消耗精力的是它必须被一遍一遍地执行。
+
+后来我重新翻到《日本蜡烛图技术》。这本书让我越来越清楚地意识到，图表里的信息并不只是价格本身，很多判断其实已经被压缩在形态结构里。问题在于，这套知识原本就是写给人读的，不是写给程序跑的。书里的很多判断默认读者已经知道什么地方该结合趋势看，什么地方不能只看单根 K 线，什么地方要把前后文一起带进来。人读起来会觉得自然，程序读起来却会立刻撞上边界。
+
+这个项目就是从这里开始的。我想做的不是一个直接给出结论的页面，而是尝试把一套原本依赖人工阅读的过程拆开，重新组织成一条可以运行的工程链路。前面接公开行情数据和本地数据库，中间用规则系统做第一轮初筛，把候选范围压下来，后面再接入大语言模型处理解释层，最后把多周期图表、候选形态、说明文本和页面状态组织成一份真正能读下去的报告。
+
+## 我是怎么把它做出来的
+
+这个项目是沿着一条很具体的链路长出来的。
+最早先解决数据获取和本地落库，再做规则初筛，把原始图表压缩成更可处理的候选结果。
+随后接入大语言模型，专门处理解释层和候选比较，最后再把这些结果组织成长页报告和前端界面。
+回头看，这个项目真正成形的过程，不是单点功能叠加，而是把数据、筛选、解释和展示一步一步接成了一条完整链路。
+
+## 项目结构
+
+这个项目不是单一页面，而是一条完整的分析链路。在这里我只展示最核心的结构，详细解释可见页面底部。
+
+```text
+project1-crypto/
+├── main.py
+├── candlestick/
+├── data/
+├── src/
+│   ├── adapters/
+│   ├── services/
+│   │   ├── candles/
+│   │   └── llm/
+│   ├── spa/
+│   ├── templates/
+│   ├── static/
+│   ├── database.py
+│   └── web_server.py
+└── tests/
+```
+
+- main.py 是命令行入口，负责回填、扫描和运行主流程。
+- candlestick/ 存放形态规则、参数配置和结果约束，是规则引擎的知识层。
+- data/ 存放本地数据库、扫描母体和缓存结果，用来承接历史数据与报告 payload。
+- src/adapters/ 负责对接公开行情源，获取历史与实时 K 线。
+- src/services/candles/ 负责结构化初筛，把原始图表压缩成可进一步处理的候选结果。
+- src/services/llm/ 负责解释层，将结构化 handoff 交给大语言模型生成说明与比较结果。
+- src/spa/ 是前端展示层，负责把图表、候选分析和页面状态组织成完整报告。
+- src/database.py 和 src/web_server.py 分别承接本地存储与 Web 输出。
+- tests/ 用来覆盖关键链路，保证系统在迭代中不至于失稳。
+
+## 公开展示边界
+
+本页面仅展示历史原型的静态截图与系统设计思路，不提供实时数据、实际交易对象、投资建议或交易服务。公开展示的重点是工程实现、信息组织和界面结构，而非任何现实使用场景。
+
+## 报告预览
+
+我为报告写了前端，可以直接在网页中查看。我在这里以网页截图的形式展示报告的主要功能，并对敏感信息做了遮挡处理，包括币种、价格、时间轴以及 AI 的具体分析结果。
+
+报告的顶层结构包括标题区、说明区、统计区和主报告区域。整体分为“特别关注”和“信号发现”两部分。特别关注区展示的是由用户主动选定的条目；信号发现区则展示用户未主动关注、但在当前分析中出现了值得注意形态的条目。
+
+![hero1](/images/crypto/hero1.png)
+
+用户可以通过交互按钮（红框处）自行选择需要关注的条目。被选定的项目会始终置于报告顶部，无论当前 K 线是否识别出明确形态。
+
+![hero2](/images/crypto/hero2.png)
+
+每一个被展示的币种，都对应一张独立的展示卡片。下图是单张卡片的内容示例：
+
+![hero3](/images/crypto/hero3.png)
+
+用户可以在交互按钮中切换不同周期的 K 线（红框处）。
+
+卡片下方的候选形态模块用于展示当前 K 线可能对应的蜡烛图形态，并给出该形态的判断依据、确认条件和失效条件。形态识别先经过代码层面的初筛，再交由 AI 大语言模型做进一步分析。多个候选形态会按照匹配程度排序展示，并附上对应的依据和分析说明。
+
+下图展示的是信号发现区。用户未主动关注的币种，在经过形态初筛和进一步分析后，如果出现值得注意的结构，就会被展示在这一部分。相关项目同样会给出形态依据、确认条件、失效条件和补充分析。
+
+![hero4](/images/crypto/hero4.png)
+
+![hero5](/images/crypto/hero5.png)
+
+报告还会抓取当前时段内可能相关的风险事件，作为页面中的补充信息，为分析提供背景。
+
+![hero6](/images/crypto/hero6.png)
+
+### 更多细节
+
+<details>
+  <summary>查看更详细的实现说明</summary>
+
+  <br />
+    ### 更完整的目录树
+
+    ```{}
+  project1-crypto/
+  ├── main.py
+  ├── requirements.txt
+  ├── candlestick/
+  │   ├── candlestick_patterns.yaml
+  │   ├── candlestick_params.yaml
+  │   ├── candlestick_global_rules.yaml
+  │   └── pattern_result_schema.yaml
+  ├── data/
+  │   ├── cpia.db
+  │   ├── scan_symbols.txt
+  │   ├── always_include.txt
+  │   └── report_cache.json
+  ├── scripts/
+  │   └── preprocess_playbooks.py
+  ├── src/
+  │   ├── adapters/
+  │   │   ├── binance_spot.py
+  │   │   ├── binance_futures.py
+  │   │   ├── binance_ws_spot.py
+  │   │   └── binance_ws_futures.py
+  │   ├── patterns/
+  │   │   ├── base.py
+  │   │   ├── trend.py
+  │   │   ├── breakout_retest.py
+  │   │   ├── rounded_bottom.py
+  │   │   └── ...
+  │   ├── services/
+  │   │   ├── backfill_service.py
+  │   │   ├── symbol_service.py
+  │   │   ├── stream_service.py
+  │   │   ├── feature_service.py
+  │   │   ├── signal_service.py
+  │   │   ├── scan_service.py
+  │   │   ├── report_service.py
+  │   │   ├── display_payload_builder.py
+  │   │   ├── candles/
+  │   │   │   ├── pattern_engine.py
+  │   │   │   ├── config_loader.py
+  │   │   │   ├── feature_extractor.py
+  │   │   │   ├── pattern_context.py
+  │   │   │   ├── handoff_schema.py
+  │   │   │   └── display_model.py
+  │   │   └── llm/
+  │   │       ├── llm_signal_service.py
+  │   │       ├── prompt_builder.py
+  │   │       ├── response_parser.py
+  │   │       ├── playbook_resolver.py
+  │   │       └── schemas.py
+  │   ├── spa/
+  │   │   ├── src/
+  │   │   │   ├── pages/ReportPage.tsx
+  │   │   │   ├── components/
+  │   │   │   ├── hooks/useReportData.ts
+  │   │   │   └── types/index.ts
+  │   ├── templates/
+  │   │   └── report.html.j2
+  │   ├── static/
+  │   │   ├── css/report.css
+  │   │   └── js/
+  │   ├── database.py
+  │   ├── models.py
+  │   ├── config.py
+  │   └── web_server.py
+  └── tests/
+      ├── test_scan_service.py
+      ├── test_llm_integration.py
+      ├── test_candles_engine.py
+      └── ...
+  ```
+
+  #### 1. 数据获取层：`src/adapters/`
+
+  这一层负责和外部行情源通信，包括：
+
+  - REST 接口拉取历史 K 线
+  - WebSocket 订阅实时 K 线
+  - 区分不同市场类型
+  - 做重试、限速、代理与连接处理
+
+  对应文件包括：
+
+  - `binance_spot.py`
+  - `binance_futures.py`
+  - `binance_ws_spot.py`
+  - `binance_ws_futures.py`
+
+  #### 2. 本地存储层：`src/database.py` + `data/`
+
+  为了避免每次都直接依赖外部接口，我把数据先落到本地 SQLite。
+
+  这层主要负责：
+
+  - 交易对元数据表
+  - 现货 / 合约 K 线表
+  - 实时 K 线表
+  - 流式订阅检查点
+  - 插入、查询和历史迁移
+
+  其中：
+
+  - `src/database.py` 负责表结构和数据库操作
+  - `data/cpia.db` 是本地数据库文件
+  - `data/scan_symbols.txt` 用来指定扫描母体
+  - `data/always_include.txt` 用来指定始终置顶展示的对象
+  - `data/report_cache.json` 用来缓存报告 payload
+
+  #### 3. 旧规则链路：`src/patterns/` + `feature_service.py`
+
+  项目的早期版本主要依赖一套规则类做形态识别。
+
+  这部分包括：
+
+  - `src/patterns/`：若干规则类
+  - `src/services/feature_service.py`：加载 K 线、提取特征、执行规则检测
+  - `src/services/signal_service.py`：对检测结果做评分、生成信号对象
+
+  这一层的优点是可解释、可测试、可直接落地；
+  局限是复杂边界情况难以用纯规则完全覆盖。
+
+  #### 4. 新 Candlestick Engine 链路：`src/services/candles/`
+
+  随着项目推进，我开始把形态识别从“单条规则直接出最终结论”改造成“两阶段架构”：
+
+  第一阶段由参数化引擎做候选初筛与上下文提取；
+  第二阶段再把结构化结果交给 LLM 做解释与裁决。
+
+  这一层的核心文件包括：
+
+  - `pattern_engine.py`：统一入口，负责调度全部 evaluator
+  - `config_loader.py`：读取 YAML 配置
+  - `feature_extractor.py`：从 K 线窗口中提取可供判断的形态特征
+  - `pattern_context.py`：生成趋势、位置等上下文
+  - `handoff_schema.py`：定义传递给 LLM 的结构化中间结果
+  - `display_model.py`：把内部结果转成前端可消费的展示模型
+  - `pattern_models.py`：定义 pattern result 等数据结构
+
+  #### 5. 配置驱动层：`candlestick/`
+
+  这一层是项目里很重要的一块，因为它把形态知识从 Python 代码中抽离出来，变成了可维护的配置合同。
+
+  主要包括：
+
+  - `candlestick_patterns.yaml`：形态定义
+  - `candlestick_params.yaml`：参数阈值
+  - `candlestick_global_rules.yaml`：全局规则
+  - `pattern_result_schema.yaml`：结果结构约束
+
+  这一层把规则引擎不是硬编码的一团逻辑，变成了代码 + 配置共同决定行为的系统。
+
+  #### 6. LLM 层：`src/services/llm/`
+
+  在新链路中，LLM 不再直接面对原始图表，而是接收已经被压缩过的结构化 handoff。
+
+  这一层主要包括：
+
+  - `llm_signal_service.py`：LLM 调用总入口
+  - `prompt_builder.py`：拼装 prompt
+  - `playbook_resolver.py`：注入形态说明片段
+  - `response_parser.py`：解析模型返回结果
+  - `schemas.py`：约束输出结构
+  - `audit_logger.py`：记录审计日志
+  - `cache.py`：缓存调用结果
+  - `anthropic_client.py` / `openai_compatible_client.py`：不同 provider 适配
+
+  我把 LLM 放在“解释层”和“裁决层”，而不是让它从零开始读全部原始数据。
+  这样既**减少 token 成本**，也让整条链路更可控。
+
+  #### 7. 报告与 API 层：`report_service.py`、`display_payload_builder.py`、`scan_service.py`
+
+  这一层负责把前面的分析结果真正组装成页面可以消费的内容。
+
+  - `scan_service.py`：批量调度扫描流程
+  - `report_service.py`：生成 HTML 报告，加载多周期 K 线，组织卡片内容
+  - `display_payload_builder.py`：把扫描结果、LLM enrichment、多周期 candles 等组装成统一 API payload
+  - `web_server.py`：提供路由、JSON 接口和前端壳子
+
+  #### 8. 前端展示层：`src/spa/`
+
+  这个项目后期引入了一套独立的 React + Vite SPA，用来替代更早期的静态 HTML 报告。
+
+  主要包括：
+
+  - `pages/ReportPage.tsx`：整页容器
+  - `hooks/useReportData.ts`：从 API 拉取报告数据
+  - `components/ReportHeader.tsx`：头部信息
+  - `components/SummaryBar.tsx`：统计区
+  - `components/SignalsList.tsx`：卡片列表
+  - `components/SignalCard.tsx`：单卡片主体
+  - `components/CandlestickChart.tsx`：K 线图组件
+  - `components/ChartTabs.tsx`：多周期切换
+  - `components/SortModal.tsx`：弹窗交互
+  - `types/index.ts`：前端类型定义
+
+  #### 9. 测试层：`tests/`
+
+  测试覆盖了：
+
+  - 数据抓取与适配器
+  - 数据库
+  - 扫描与回填
+  - Candlestick Engine
+  - LLM integration
+  - 前后端 payload 兼容
+
+</details>
+
+<details>
+  <summary>声明</summary>
+
+  <br />
+  本页面展示的是一个历史阶段的原型案例，用于说明我如何组织数据链路、分析链路和报告型前端界面。
+
+  为避免将该原型误解为现实服务，本页面仅保留经过处理的静态截图与项目说明，不提供任何在线分析、实时数据、交互式扫描、下载接口或推荐功能。
+
+  需要特别说明的是：
+
+  - 页面中的截图仅用于展示界面结构与信息层级
+  - 截图内容不对应任何面向公众提供的实际在线服务
+  - 本页不提供实时行情、不提供账户能力、不提供信号推送、不提供交易入口
+  - 本页不构成任何投资分析、投资建议、收益承诺或营销宣传
+  - 本页展示重点是前端设计、系统架构与工程实现方式，而非任何现实市场操作
+
+  我公开这一项目的目的，是展示我如何把一个复杂原型从数据、规则、解释到页面组织成完整链路，而不是对外提供任何金融、投资或交易相关服务。
+
+</details>

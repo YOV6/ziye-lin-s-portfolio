@@ -1,71 +1,80 @@
-import Image from "next/image";
+"use client";
+
+import { MDXProvider } from "@mdx-js/react";
+import { getMDXComponents } from "@/components/mdx-components";
+import Navigation from "@/components/Navigation";
+import Footer from "@/components/Footer";
+import Content from "./content.mdx";
+import styles from "./page.module.css";
+
+const mdxComponents = getMDXComponents();
 
 export default function CryptoReportPage() {
   return (
-    <main style={{ maxWidth: 960, margin: "0 auto", padding: "64px 24px" }}>
-      <h1 style={{ fontSize: "40px", marginBottom: 16 }}>
-        基于蜡烛图技术的市场分析 —— 项目展示
-      </h1>
+    <>
+      <Navigation />
+      <main className={styles.page}>
+        {/* Hero Section */}
+        <header className={styles.hero}>
+          <div className={styles.heroContainer}>
+            <span className={styles.heroLabel}>Project</span>
+            <h1 className={styles.heroTitle}>
+              基于蜡烛图技术的<br />加密货币市场分析
+            </h1>
+            <p className={styles.heroSubtitle}>
+              一个把多周期 K 线、规则初筛、LLM 解释和长页报告组织起来的分析原型
+            </p>
+            <div className={styles.heroMeta}>
+              <span className={styles.heroTag}>Python</span>
+              <span className={styles.heroTag}>SQLite</span>
+              <span className={styles.heroTag}>AI</span>
+              <span className={styles.heroTag}>大语言模型</span>
+            </div>
+          </div>
+          <div className={styles.heroDecoration}>
+            <div className={styles.heroCircle}></div>
+          </div>
+        </header>
 
-      <div
-        style={{
-          background: "#fff7e6",
-          border: "1px solid #f0d58c",
-          borderRadius: 12,
-          padding: 16,
-          marginBottom: 32,
-          lineHeight: 1.8,
-        }}
-      >
-        免责声明：本项目仅用于个人学习、技术研究和产品原型展示，不构成任何形式的投资建议、交易建议、收益承诺或营销宣传。页面内容以静态截图和历史样例为主，请勿据此作出交易决策。
-      </div>
+        {/* Disclaimer */}
+        <div className={styles.disclaimer}>
+          <div className={styles.disclaimerContainer}>
+            <span className={styles.disclaimerIcon}>⚠</span>
+            <p>
+              <strong>免责声明：</strong>本项目仅用于个人学习、技术研究和产品原型展示，不构成任何形式的投资建议、交易建议、收益承诺或营销宣传。页面内容以静态截图和历史样例为主，请勿据此作出交易决策。
+            </p>
+          </div>
+        </div>
 
-      <section style={{ marginBottom: 40 }}>
-        <h2 style={{ fontSize: "28px", marginBottom: 12 }}>项目缘起</h2>
-        <p style={{ lineHeight: 1.9 }}>
-          这个项目希望把多周期 K 线形态识别、报告生成和产品界面组织成一个可读、可展示、可复盘的页面，而不是简单地输出若干零散信号。
-        </p>
-      </section>
+        {/* Main Content */}
+        <div className={styles.container}>
+          <article className={styles.article}>
+            <MDXProvider components={mdxComponents}>
+              <Content />
+            </MDXProvider>
+          </article>
+        </div>
 
-      <section style={{ marginBottom: 40 }}>
-        <h2 style={{ fontSize: "28px", marginBottom: 12 }}>项目目标</h2>
-        <ul style={{ lineHeight: 2 }}>
-          <li>将不同周期的分析结果纳入统一报告结构</li>
-          <li>把扫描、筛选、解释、展示串成完整链路</li>
-          <li>用更克制的方式展示高风险题材产品原型</li>
-        </ul>
-      </section>
-
-      <section style={{ marginBottom: 40 }}>
-        <h2 style={{ fontSize: "28px", marginBottom: 12 }}>页面预览</h2>
-        <p style={{ lineHeight: 1.9, marginBottom: 16 }}>
-          下图展示了项目报告页的整体结构，包括标题区、统计区、重点观察区和单币种卡片区。
-        </p>
-
-        <Image
-          src="/images/crypto/hero.png"
-          alt="Crypto report screenshot"
-          width={1400}
-          height={900}
-          style={{ width: "100%", height: "auto", borderRadius: 12, border: "1px solid #ddd" }}
-        />
-      </section>
-
-      <section style={{ marginBottom: 40 }}>
-        <h2 style={{ fontSize: "28px", marginBottom: 12 }}>设计说明</h2>
-        <p style={{ lineHeight: 1.9 }}>
-          我最终没有直接把完整 SPA 作为对外公开主形态，而是选择用静态截图和专题页来展示项目能力。这样更适合作品集表达，也更利于控制页面的叙事方式和风险边界。
-        </p>
-      </section>
-
-      <section>
-        <h2 style={{ fontSize: "28px", marginBottom: 12 }}>后续计划</h2>
-        <ul style={{ lineHeight: 2 }}>
-          <li>继续补充更多截图和图注</li>
-          <li>补一张系统结构图</li>
-          <li>把展示模板复用到其他项目</li>
-        </ul>
-      </section>
-    </main>
+        {/* Footer Navigation */}
+        <div className={styles.container}>
+          <footer className={styles.footerNav}>
+            <a href="/projects" className={styles.backLink}>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path
+                  d="M13 8H3M7 4l-4 4 4 4"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+              <span>返回项目列表</span>
+            </a>
+            <span className={styles.footerNote}>2026</span>
+          </footer>
+        </div>
+      </main>
+      <Footer />
+    </>
   );
 }

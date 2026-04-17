@@ -1,0 +1,50 @@
+.main {
+  padding-top: 80px;
+}
+
+.contact {
+  padding: var(--space-4xl) 0;
+  background: var(--color-text-primary);
+  text-align: center;
+}
+
+.container {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 0 var(--space-lg);
+}
+
+.contactTitle {
+  font-size: var(--font-size-h1);
+  font-weight: 600;
+  color: white;
+  margin-bottom: var(--space-md);
+  font-family: var(--font-serif);
+}
+
+.contactText {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: var(--font-size-body);
+  margin-bottom: var(--space-xl);
+}
+
+.contactBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-xl);
+  background: var(--color-accent);
+  color: white;
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-body);
+  font-weight: 500;
+  transition: all var(--transition-fast);
+}
+
+.contactBtn:hover {
+  background: var(--color-accent-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(201, 162, 39, 0.3);
+  color: white;
+}

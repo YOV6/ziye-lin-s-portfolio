@@ -1,23 +1,33 @@
+import Projects from "@/components/Projects";
+import Footer from "@/components/Footer";
+import Navigation from "@/components/Navigation";
+import styles from "./page.module.css";
+
 export default function ProjectsPage() {
   return (
-    <main style={{ maxWidth: 960, margin: "0 auto", padding: "64px 24px" }}>
-      <h1 style={{ fontSize: "36px", marginBottom: 24 }}>Projects</h1>
+    <>
+      <Navigation />
+      <main className={styles.main}>
+        <Projects />
+        <ContactSection />
+      </main>
+      <Footer />
+    </>
+  );
+}
 
-      <div
-        style={{
-          border: "1px solid #ddd",
-          borderRadius: 16,
-          padding: 24,
-          marginBottom: 20,
-        }}
-      >
-        <h2 style={{ fontSize: "24px", marginBottom: 8 }}>
-          <a href="/projects/crypto-report">Crypto Report Case Study</a>
-        </h2>
-        <p style={{ lineHeight: 1.8 }}>
-          一个基于蜡烛图分析、报告生成和产品界面设计的展示型项目专题页。
+function ContactSection() {
+  return (
+    <section id="contact" className={styles.contact}>
+      <div className={styles.container}>
+        <h2 className={styles.contactTitle}>开始你的项目</h2>
+        <p className={styles.contactText}>
+          有想法？让我们一起把它变成现实。
         </p>
+        <a href="mailto:hello@example.com" className={styles.contactBtn}>
+          联系我
+        </a>
       </div>
-    </main>
+    </section>
   );
 }
