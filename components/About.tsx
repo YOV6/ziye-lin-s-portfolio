@@ -1,21 +1,75 @@
 import styles from "./About.module.css";
 
 const skills = [
-  "Product Design",
-  "UI/UX Design",
-  "Data Analysis",
-  "Trading Systems",
-  "Automation",
-  "React / Next.js",
-  "TypeScript",
   "Python",
+  "SQL",
+  "R",
+  "AI",
+  "因果推断",
+  "AB实验",
+  "运筹学",
+  "NLP",
+  "数据可视化",
 ];
 
 const interests = [
-  { icon: "◆", text: "交互设计与用户体验" },
-  { icon: "◆", text: "量化交易与数据分析" },
-  { icon: "◆", text: "自动化工作流构建" },
-  { icon: "◆", text: "加密货币生态研究" },
+  { icon: "◆", text: "产品设计与数据分析" },
+  { icon: "◆", text: "机器学习与应用" },
+  { icon: "◆", text: "结构化问题求解" },
+];
+
+const education = [
+  {
+    school: "武汉大学",
+    faculty: "经济与管理学院",
+    major: "管理科学",
+    degree: "本科",
+    period: "2021.09 — 2025.07",
+  },
+  {
+    school: "南京大学",
+    faculty: "商学院",
+    major: "企业管理",
+    degree: "学术硕士",
+    period: "2025.09 — 2028.07",
+  },
+];
+
+const research = {
+  role: "研究助理",
+  affiliation: "武汉大学经济与管理学院",
+  activities: [
+    "用户行为分析",
+    "A 股年报文本分析",
+    "专利结构分析",
+    "招聘需求文本分析",
+  ],
+  paper: {
+    title:
+      "Contingent organizational design for nascent innovation: A case-grounded simulation study",
+    status: "在投",
+    position: "第一作者",
+    method: "Agent-based Modeling 仿真模拟",
+    description:
+      "通过 agent-based 模型建模案例研究所提炼的机制，研究新兴科技市场中的企业创新绩效。",
+  },
+};
+
+const internships = [
+  {
+    company: "猿辅导",
+    role: "运营管理实习生",
+    period: "2024.10 — 2025.01",
+    description:
+      "使用 SQL 分析在线试卷需求，开发 Python 自动更新脚本，支持多学科内容生产与流程协同。",
+  },
+  {
+    company: "欧泰谱",
+    role: "数据分析实习生",
+    period: "2023.06 — 2023.08",
+    description:
+      "处理抖音、天猫、京东等平台数据，开发 R 自动数据清洗脚本，参与 CRM 客户分析。",
+  },
 ];
 
 export default function About() {
@@ -30,18 +84,100 @@ export default function About() {
 
         <div className={styles.content}>
           <div className={styles.main}>
-            <p className={styles.paragraph}>
-              我是一名关注产品设计与技术实现的产品设计师。在数据分析和自动化领域有实践经验，
-              擅长将复杂的技术概念转化为直观的用户界面和流畅的产品体验。
-            </p>
-            <p className={styles.paragraph}>
-              相信技术与设计的交叉地带蕴含着最有趣的挑战。致力于构建既有技术深度、
-              又能触动人心的数字产品。在加密货币交易系统、数据可视化平台、
-              以及无代码自动化工具等领域有项目经验。
+            <p className={styles.intro}>
+              关注数据驱动的产品设计、分析系统搭建与结构化问题求解。
+              熟悉 Python、SQL、R，在用户行为分析、文本分析、自动化流程和分析型产品原型等方面有实践经验。
             </p>
 
-            <div className={styles.interests}>
-              <h3 className={styles.subtitle}>专注领域</h3>
+            <div className={styles.sectionBlock}>
+              <h3 className={styles.sectionTitle}>教育经历</h3>
+              <div className={styles.timeline}>
+                {education.map((edu, index) => (
+                  <div key={index} className={styles.timelineItem}>
+                    <div className={styles.timelineHeader}>
+                      <span className={styles.schoolName}>{edu.school}</span>
+                      <span className={styles.period}>{edu.period}</span>
+                    </div>
+                    <div className={styles.timelineMeta}>
+                      {edu.faculty} · {edu.major}
+                    </div>
+                    <div className={styles.degree}>{edu.degree}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className={styles.sectionBlock}>
+              <h3 className={styles.sectionTitle}>研究经历</h3>
+              <div className={styles.researchBlock}>
+                <div className={styles.paperBlock}>
+                  <div className={styles.paperHeader}>
+                    <span className={styles.paperBadge}>
+                      期刊论文{research.paper.status}
+                    </span>
+                    <span className={styles.paperMethod}>
+                      {research.paper.method}
+                    </span>
+                  </div>
+                  <div className={styles.paperTitle}>
+                    {research.paper.title}
+                  </div>
+                  <div className={styles.paperDesc}>
+                    {research.paper.description}
+                  </div>
+                  <div className={styles.paperPosition}>
+                    {research.paper.position}
+                  </div>
+                </div>
+                <div className={styles.researchHeader}>
+                  <span className={styles.researchRole}>{research.role}</span>
+                  <span className={styles.researchAffiliation}>
+                    @{research.affiliation}
+                  </span>
+                </div>
+                <ul className={styles.activityList}>
+                  {research.activities.map((activity, index) => (
+                    <li key={index} className={styles.activityItem}>
+                      {activity}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+
+            <div className={styles.sectionBlock}>
+              <h3 className={styles.sectionTitle}>实习经历</h3>
+              <div className={styles.internshipList}>
+                {internships.map((item, index) => (
+                  <div key={index} className={styles.internshipItem}>
+                    <div className={styles.internshipHeader}>
+                      <span className={styles.companyName}>{item.company}</span>
+                      <span className={styles.period}>{item.period}</span>
+                    </div>
+                    <div className={styles.internshipRole}>{item.role}</div>
+                    <div className={styles.internshipDesc}>
+                      {item.description}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div className={styles.sidebar}>
+            <div className={styles.skillsCard}>
+              <h3 className={styles.cardTitle}>技能</h3>
+              <div className={styles.tagCloud}>
+                {skills.map((skill, index) => (
+                  <span key={index} className="tag">
+                    {skill}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            <div className={styles.interestsCard}>
+              <h3 className={styles.cardTitle}>专注领域</h3>
               <ul className={styles.interestList}>
                 {interests.map((item, index) => (
                   <li key={index} className={styles.interestItem}>
@@ -50,33 +186,6 @@ export default function About() {
                   </li>
                 ))}
               </ul>
-            </div>
-          </div>
-
-          <div className={styles.sidebar}>
-            <div className={styles.skillsCard}>
-              <h3 className={styles.cardTitle}>技能标签</h3>
-              <div className={styles.tagCloud}>
-                {skills.map((skill, index) => (
-                  <span
-                    key={index}
-                    className={`tag ${skill === "Product Design" ? "accent" : ""}`}
-                  >
-                    {skill}
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            <div className={styles.statsCard}>
-              <div className={styles.stat}>
-                <span className={styles.statNumber}>3+</span>
-                <span className={styles.statLabel}>年设计经验</span>
-              </div>
-              <div className={styles.stat}>
-                <span className={styles.statNumber}>10+</span>
-                <span className={styles.statLabel}>完成项目</span>
-              </div>
             </div>
           </div>
         </div>

@@ -173,6 +173,24 @@ a:hover {
 .delay-600 { animation-delay: 600ms; }
 .delay-700 { animation-delay: 700ms; }
 
+/* Animation safety: ensure elements become visible even if animation fails */
+@media (prefers-reduced-motion: no-preference) {
+  .animate-fade-in,
+  .animate-fade-in-up,
+  .animate-slide-in,
+  .animate-scale-in {
+    opacity: 1;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-in,
+  .animate-fade-in-up,
+  .animate-slide-in,
+  .animate-scale-in {
+    opacity: 1;
+  }
+}
+
 /* ============================================
    Component Base Styles
    ============================================ */

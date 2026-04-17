@@ -41,7 +41,7 @@
 
 .content {
   display: grid;
-  grid-template-columns: 1fr 380px;
+  grid-template-columns: 1fr 320px;
   gap: var(--space-3xl);
   align-items: start;
 }
@@ -65,65 +65,228 @@
 }
 
 .main {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2xl);
+}
+
+.intro {
+  color: var(--color-text-secondary);
+  line-height: 1.9;
+  font-size: 1.0625rem;
   max-width: 640px;
 }
 
-.paragraph {
-  color: var(--color-text-secondary);
-  line-height: 1.9;
-  margin-bottom: var(--space-lg);
-  font-size: 1.0625rem;
+.sectionBlock {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
 }
 
-.paragraph:last-child {
-  margin-bottom: 0;
-}
-
-.interests {
-  margin-top: var(--space-2xl);
-  padding-top: var(--space-2xl);
-  border-top: 1px solid var(--color-border-light);
-}
-
-.subtitle {
+.sectionTitle {
   font-size: var(--font-size-h3);
   font-weight: 600;
   color: var(--color-text-primary);
-  margin-bottom: var(--space-lg);
+  padding-bottom: var(--space-md);
+  border-bottom: 1px solid var(--color-border-light);
 }
 
-.interestList {
-  list-style: none;
+/* Timeline (Education) */
+.timeline {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.timelineItem {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr auto;
+  grid-template-rows: auto auto;
+  gap: var(--space-xs) var(--space-md);
+}
+
+.timelineHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
   gap: var(--space-md);
 }
 
-@media (max-width: 600px) {
-  .interestList {
-    grid-template-columns: 1fr;
-  }
+.schoolName {
+  font-size: var(--font-size-body);
+  font-weight: 600;
+  color: var(--color-text-primary);
 }
 
-.interestItem {
+.period {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-tertiary);
+  white-space: nowrap;
+}
+
+.timelineMeta {
+  font-size: var(--font-size-small);
+  color: var(--color-text-secondary);
+  grid-column: 1 / -1;
+}
+
+.degree {
+  grid-column: 1 / -1;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-tertiary);
+  background: var(--color-bg-tertiary);
+  padding: 2px var(--space-sm);
+  border-radius: var(--radius-sm);
+  width: fit-content;
+}
+
+/* Research Block */
+.researchBlock {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.researchHeader {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.researchRole {
+  font-size: var(--font-size-small);
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.researchAffiliation {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-tertiary);
+  font-family: var(--font-mono);
+}
+
+.activityList {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  padding: 0;
+  margin: 0;
+}
+
+.activityItem {
+  font-size: var(--font-size-small);
+  color: var(--color-text-secondary);
+  background: white;
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border-light);
+}
+
+.paperBlock {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.paperHeader {
   display: flex;
   align-items: center;
-  gap: var(--space-sm);
+  gap: var(--space-md);
+  flex-wrap: wrap;
+}
+
+.paperBadge {
+  font-size: var(--font-size-small);
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.paperMethod {
+  font-size: var(--font-size-xs);
+  font-weight: 500;
+  color: var(--color-accent);
+  background: var(--color-bg-tertiary);
+  padding: 2px var(--space-sm);
+  border-radius: var(--radius-sm);
+}
+
+.paperTitle {
+  font-size: var(--font-size-small);
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+  font-style: italic;
+}
+
+.paperDesc {
+  font-size: var(--font-size-small);
+  color: var(--color-text-tertiary);
+  line-height: 1.6;
+}
+
+.paperPosition {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-tertiary);
+}
+
+/* Internship List */
+.internshipList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.internshipItem {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.internshipHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--space-md);
+}
+
+.companyName {
+  font-size: var(--font-size-body);
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.internshipRole {
+  font-size: var(--font-size-small);
   color: var(--color-text-secondary);
 }
 
-.interestIcon {
-  color: var(--color-accent);
-  font-size: 0.5rem;
+.internshipDesc {
+  font-size: var(--font-size-small);
+  color: var(--color-text-tertiary);
+  line-height: 1.6;
 }
 
 /* Sidebar Cards */
+.sidebar {
+  position: sticky;
+  top: 100px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
 .skillsCard {
   background: white;
   border: 1px solid var(--color-border-light);
   border-radius: var(--radius-lg);
   padding: var(--space-xl);
-  margin-bottom: var(--space-lg);
+}
+
+.interestsCard {
+  background: white;
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-lg);
+  padding: var(--space-xl);
 }
 
 .cardTitle {
@@ -139,34 +302,24 @@
   gap: var(--space-sm);
 }
 
-.statsCard {
-  background: linear-gradient(
-    135deg,
-    var(--color-text-primary) 0%,
-    #2a2a2a 100%
-  );
-  border-radius: var(--radius-lg);
-  padding: var(--space-xl);
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--space-lg);
+.interestList {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  padding: 0;
+  margin: 0;
 }
 
-.stat {
-  text-align: center;
+.interestItem {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-small);
 }
 
-.statNumber {
-  display: block;
-  font-size: var(--font-size-h2);
-  font-weight: 700;
-  color: white;
-  font-family: var(--font-serif);
-}
-
-.statLabel {
-  display: block;
-  font-size: var(--font-size-xs);
-  color: rgba(255, 255, 255, 0.6);
-  margin-top: var(--space-xs);
+.interestIcon {
+  color: var(--color-accent);
+  font-size: 0.5rem;
 }

@@ -24,7 +24,7 @@ function ContactSection() {
         <p className={styles.contactText}>
           有想法？让我们一起把它变成现实。
         </p>
-        <a href="mailto:hello@example.com" className={styles.contactBtn}>
+        <a href="mailto:linzy@smail.nju.edu.cn" className={styles.contactBtn}>
           联系我
         </a>
       </div>

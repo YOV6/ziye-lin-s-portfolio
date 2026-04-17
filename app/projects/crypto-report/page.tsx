@@ -24,6 +24,7 @@ export default function CryptoReportPage() {
               <span className={styles.heroTag}>AI</span>
               <span className={styles.heroTag}>Python</span>
               <span className={styles.heroTag}>SQLite</span>
+              <span className={styles.heroTag}>数据抓取</span>
               <span className={styles.heroTag}>大语言模型</span>
             </div>
           </div>

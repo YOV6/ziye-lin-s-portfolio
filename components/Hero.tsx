@@ -6,17 +6,16 @@ export default function Hero() {
       <div className={styles.container}>
         <div className={styles.content}>
           <p className={`${styles.eyebrow} animate-fade-in`}>
-            Product Designer & Developer
+            数据 · 产品 · 分析
           </p>
           <h1 className={`${styles.name} animate-fade-in delay-100`}>
-            Ziye Lin
+            林子业
           </h1>
           <p className={`${styles.tagline} animate-fade-in delay-200`}>
-            探索产品设计、数据分析与自动化的交叉地带
+            南京大学 · 研究生在读
           </p>
           <p className={`${styles.description} animate-fade-in delay-300`}>
-            致力于用设计思维和工程技术，创造兼具美感与功能性的数字产品。
-            相信好的用户体验源于对细节的极致追求。
+            关注数据驱动的产品设计、分析系统搭建与结构化问题求解
           </p>
           <div className={`${styles.cta} animate-fade-in delay-400`}>
             <a href="#projects" className={styles.primaryBtn}>

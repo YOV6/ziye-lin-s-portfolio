@@ -21,13 +21,13 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Ziye Lin | Product Designer & Developer",
-  description: "个人作品集 - 探索产品设计、数据分析与自动化",
-  keywords: ["portfolio", "product design", "data analysis", "automation", "crypto"],
-  authors: [{ name: "Ziye Lin" }],
+  title: "林子业的个人主页",
+  description: "个人作品集 - 关注数据驱动的产品设计、分析系统搭建与结构化问题求解",
+  keywords: ["portfolio", "product design", "data analysis", "machine learning", "NLP"],
+  authors: [{ name: "林子业" }],
   openGraph: {
-    title: "Ziye Lin | Product Designer & Developer",
-    description: "个人作品集 - 探索产品设计、数据分析与自动化",
+    title: "林子业的个人主页",
+    description: "个人作品集 - 关注数据驱动的产品设计、分析系统搭建与结构化问题求解",
     type: "website",
     locale: "zh_CN",
   },

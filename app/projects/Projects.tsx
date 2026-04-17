@@ -4,35 +4,19 @@ import styles from "./Projects.module.css";
 const projects = [
   {
     slug: "crypto-report",
-    title: "Crypto Report",
+    title: "基于蜡烛图技术的加密货币市场分析",
     description:
-      "基于蜡烛图技术的加密货币市场分析平台，集成实时行情数据与 LLM 智能信号生成，为交易决策提供数据支持。",
-    tags: ["Next.js", "React", "Python", "LLM", "Binance API"],
+      "一个 AI 分析多周期 K 线的产品原型",
+    tags: ["AI", "Python", "SQLite", "LLM", "React"],
     status: "completed" as const,
     link: "/projects/crypto-report",
   },
   {
-    slug: "datapulse",
-    title: "DataPulse Dashboard",
+    slug: "crude-oil",
+    title: "原油期货市场分析与预测",
     description:
-      "实时数据仪表板解决方案，支持多数据源接入、自定义可视化组件与告警规则配置。",
-    tags: ["React", "D3.js", "Node.js", "PostgreSQL"],
-    status: "coming-soon" as const,
-  },
-  {
-    slug: "autoflow",
-    title: "AutoFlow",
-    description:
-      "无代码自动化工作流平台，让用户通过可视化拖拽构建复杂的业务流程与数据处理管道。",
-    tags: ["Next.js", "TypeScript", "PostgreSQL", "n8n"],
-    status: "coming-soon" as const,
-  },
-  {
-    slug: "designtokens",
-    title: "DesignTokens",
-    description:
-      "组件化设计系统，支持多框架导出、CSS 变量驱动的主题切换与企业级设计规范文档。",
-    tags: ["React", "Storybook", "CSS Variables", "Figma API"],
+      "不是原型，是应用。原油期货 K 线分析、市场趋势预测和交易策略建议。",
+    tags: ["AI", "Python", "LLM"],
     status: "coming-soon" as const,
   },
 ];

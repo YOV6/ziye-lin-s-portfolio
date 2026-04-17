@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
 import styles from "./Navigation.module.css";
 
 const navLinks = [
@@ -13,6 +14,8 @@ const navLinks = [
 export default function Navigation() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const pathname = usePathname();
+  const router = useRouter();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -34,9 +37,28 @@ export default function Navigation() {
         <ul className={styles.desktopNav}>
           {navLinks.map((link) => (
             <li key={link.href}>
-              <a href={link.href} className={styles.navLink}>
-                {link.label}
-              </a>
+              {link.href.startsWith("#") ? (
+                <a
+                  href={link.href}
+                  className={styles.navLink}
+                  onClick={(e) => {
+                    if (pathname !== "/") {
+                      e.preventDefault();
+                      router.push("/");
+                      setTimeout(() => {
+                        const el = document.querySelector(link.href);
+                        el?.scrollIntoView({ behavior: "smooth" });
+                      }, 100);
+                    }
+                  }}
+                >
+                  {link.label}
+                </a>
+              ) : (
+                <Link href={link.href} className={styles.navLink}>
+                  {link.label}
+                </Link>
+              )}
             </li>
           ))}
         </ul>
@@ -59,13 +81,33 @@ export default function Navigation() {
           <ul>
             {navLinks.map((link) => (
               <li key={link.href}>
-                <a
-                  href={link.href}
-                  className={styles.mobileNavLink}
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  {link.label}
-                </a>
+                {link.href.startsWith("#") ? (
+                  <a
+                    href={link.href}
+                    className={styles.mobileNavLink}
+                    onClick={(e) => {
+                      setMobileMenuOpen(false);
+                      if (pathname !== "/") {
+                        e.preventDefault();
+                        router.push("/");
+                        setTimeout(() => {
+                          const el = document.querySelector(link.href);
+                          el?.scrollIntoView({ behavior: "smooth" });
+                        }, 100);
+                      }
+                    }}
+                  >
+                    {link.label}
+                  </a>
+                ) : (
+                  <Link
+                    href={link.href}
+                    className={styles.mobileNavLink}
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    {link.label}
+                  </Link>
+                )}
               </li>
             ))}
           </ul>
