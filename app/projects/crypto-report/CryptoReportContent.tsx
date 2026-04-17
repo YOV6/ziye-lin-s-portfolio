@@ -236,21 +236,35 @@ export default function CryptoReportContent() {
             image="/images/crypto/hero2.png"
             text="用户可以通过交互按钮自行选择需要关注的条目。被选定的项目会始终置于报告顶部，无论当前 K 线是否识别出明确形态。"
           />
+          <p className={styles.reportPreviewText}>
+            每一个被展示的币种，都对应一张独立的展示卡片。下图是单张卡片的内容示例。
+          </p>
           <PreviewItem
             image="/images/crypto/hero3.png"
-            text="每一个被展示的币种，都对应一张独立的展示卡片。下图是单张卡片的内容示例。"
+            text="卡片下方的候选形态模块用于展示当前 K 线可能对应的蜡烛图形态，并给出该形态的判断依据、确认条件和失效条件。"
           />
+          <p className={styles.reportPreviewText}>
+            在示例的这张信号卡片里，蜡烛图形态初筛出了两种可能的形态，十字孕线和十字线家族（可能是家族中的晨星线），并按AI LLM分析的可能性优先级排序。
+            根据《日本蜡烛图技术》的指导，LLM给出的形态判断依据是“第二根不是普通小实体，而是十字线，被第一根实体包住。”，并提示用户可通过第三根K线方向确认该疑似形态。
+            LLM还分析了疑似形态的失效条件，当“K线回到十字线附近持续横盘，未形成突破”时，该形态失效，需重新判断。
+          </p>
+          <p className={styles.reportPreviewText}>
+            此外，用户还可以在交互按钮（红框中）中切换不同周期的 K 线。
+          </p>
+          <p className={styles.reportPreviewText}>
+            下图展示的是信号发现区。用户未主动关注的币种，在经过形态初筛和进一步分析后，如果出现值得注意的结构，就会被展示在这一部分。
+          </p>
           <PreviewItem
             image="/images/crypto/hero4.png"
-            text="用户可以在交互按钮中切换不同周期的 K 线。卡片下方的候选形态模块用于展示当前 K 线可能对应的蜡烛图形态，并给出该形态的判断依据、确认条件和失效条件。"
+            text=""
           />
           <PreviewItem
             image="/images/crypto/hero5.png"
-            text="下图展示的是信号发现区。用户未主动关注的币种，在经过形态初筛和进一步分析后，如果出现值得注意的结构，就会被展示在这一部分。"
+            text="报告还会抓取当前时段内可能相关的风险事件，作为页面中的补充信息，为分析提供背景。"
           />
           <PreviewItem
             image="/images/crypto/hero6.png"
-            text="报告还会抓取当前时段内可能相关的风险事件，作为页面中的补充信息，为分析提供背景。"
+            text="风险事件展示在页面底部。"
           />
         </ReportPreviewCard>
       </Section>

@@ -195,11 +195,18 @@
   border-bottom: 1px solid var(--color-border-light);
 }
 
+.reportPreviewText {
+  color: var(--color-text-secondary);
+  font-size: 1.0625rem;
+  line-height: 1.8;
+  margin: 0;
+}
+
 /* ---- Preview Item ---- */
 .previewItem {
   display: flex;
   flex-direction: column;
-  gap: var(--space-2xl);
+  gap: var(--space-sm);
   margin-bottom: var(--space-3xl);
 }
 
