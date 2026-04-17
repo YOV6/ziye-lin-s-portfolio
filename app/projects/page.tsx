@@ -1,4 +1,4 @@
-import Projects from "@/components/Projects";
+import Projects from "./Projects";
 import Footer from "@/components/Footer";
 import Navigation from "@/components/Navigation";
 import styles from "./page.module.css";
