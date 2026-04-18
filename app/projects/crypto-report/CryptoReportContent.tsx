@@ -318,7 +318,7 @@ export default function CryptoReportContent() {
 
           <DetailSection title="1. 数据获取层 src/adapters/">
             <P>
-              这一层负责和外部行情源通信，包括 REST 接口拉取历史 K 线、WebSocket 订阅实时 K 线、区分不同市场类型、做重试限速与代理处理。对应文件包括 `binance_spot.py`、`binance_futures.py`、`binance_ws_spot.py`、`binance_ws_futures.py`。
+              这一层负责和外部行情源通信，包括 REST 接口拉取历史 K 线、WebSocket 订阅实时 K 线、区分不同市场类型、做重试限速与代理处理。。
             </P>
           </DetailSection>
 
