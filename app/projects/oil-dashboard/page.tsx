@@ -44,6 +44,24 @@ const productCapabilities = [
   },
 ];
 
+const targetAudiences = [
+  {
+    title: "原油与大宗商品研究者",
+    description:
+      "为需要快速跟踪油市状态的研究型用户提供一屏式信息整合：同时查看 WTI、上海原油 SC、SC 期限结构、事件风险和三情景推演，减少在行情图表、新闻页面和研究笔记之间反复切换的成本。",
+  },
+  {
+    title: "需要油价风险参考的业务用户",
+    description:
+      "为受油价波动影响的业务场景提供结构化观察，例如能源采购、供应链、物流、制造业成本监测等。用户可以通过市场简报、期限结构和事件风险模块，快速理解当前油价风险来自价格行为、结构变化还是外部事件。",
+  },
+  {
+    title: "投资与交易辅助研究用户",
+    description:
+      "为关注短期价格行为的研究型用户提供基于蜡烛图技术的辅助分析：系统不会把单一形态直接翻译成买卖建议，而是结合前序趋势、区间位置、支撑阻力、确认条件和失效信号，帮助用户形成更清晰的观察框架。",
+  },
+];
+
 const modules = [
   {
     index: "01",
@@ -195,6 +213,45 @@ export default function OilDashboardPage() {
           </div>
         </section>
 
+        <Section eyebrow="项目背景" title="为什么做这个项目">
+          <div className={styles.textBlock}>
+            <p>
+              原油市场的短期判断往往不是由单一价格决定的。WTI 代表国际原油基准价格，上海原油 SC
+              反映国内原油市场和人民币计价体系下的价格表现；期限结构提示市场对近月供应、库存压力
+              和交割紧张程度的定价；事件风险又可能通过供应、运输、库存、地缘政治或市场情绪影响价格预期。
+            </p>
+            <p>
+              问题在于，这些信息通常分散在不同页面和不同叙述中。行情图表、期限结构、新闻事件和分析结论
+              彼此割裂，用户需要自己在多个信息源之间切换、判断和整合。
+            </p>
+            <p>
+              我想用AI把原本依赖人工阅读的蜡烛图分析过程实现自动化，把原油市场数据组织成一个能够被用户直接读懂的市场分析界面，省去繁琐的人工分析。
+            </p>
+          </div>
+        </Section>
+
+        <Section eyebrow="产品能力" title="产品解决什么问题">
+          <div className={styles.cardGrid}>
+            {productCapabilities.map((item) => (
+              <article key={item.title} className={styles.card}>
+                <h3>{item.title}</h3>
+                <p>{item.description}</p>
+              </article>
+            ))}
+          </div>
+        </Section>
+
+        <Section eyebrow="适用场景" title="产品为谁提供价值">
+          <div className={styles.audienceGrid}>
+            {targetAudiences.map((item) => (
+              <article key={item.title} className={styles.card}>
+                <h3>{item.title}</h3>
+                <p>{item.description}</p>
+              </article>
+            ))}
+          </div>
+        </Section>
+
         <section id="demo" className={styles.demoSection}>
           <div className={styles.demoHeader}>
             <div>
@@ -235,7 +292,7 @@ export default function OilDashboardPage() {
           </div>
         </section>
 
-        <Section eyebrow="核心模块" title="五个核心分析模块">
+        <Section eyebrow="功能介绍" title="五个核心分析模块">
           <div className={styles.moduleList}>
             {modules.map((item) => (
               <article key={item.index} className={styles.moduleItem}>
@@ -268,22 +325,11 @@ export default function OilDashboardPage() {
           </div>
         </Section>
 
-        <Section eyebrow="产品能力" title="产品解决什么问题">
-          <div className={styles.cardGrid}>
-            {productCapabilities.map((item) => (
-              <article key={item.title} className={styles.card}>
-                <h3>{item.title}</h3>
-                <p>{item.description}</p>
-              </article>
-            ))}
-          </div>
-        </Section>
-
         <Section eyebrow="我的工作" title="从方法拆解到产品实现">
           <div className={styles.roleGrid}>
             <div className={styles.roleIntro}>
               <p>
-                该项目由我独立规划、开发和迭代。我负责从产品定位、信息架构、数据链路、LLM 分析约束、
+                该项目由我借助Claude Code开发，横跨从产品定位、信息架构、数据链路、LLM 分析约束、
                 前端展示到最终部署的完整流程。
               </p>
               <p>
@@ -328,25 +374,6 @@ export default function OilDashboardPage() {
                 交易建议或收益承诺。
               </p>
             </div>
-          </div>
-        </Section>
-
-        <Section eyebrow="项目背景" title="为什么做这个项目">
-          <div className={styles.textBlock}>
-            <p>
-              原油市场的短期判断往往不是由单一价格决定的。WTI 代表国际原油基准价格，上海原油 SC
-              反映国内原油市场和人民币计价体系下的价格表现；期限结构提示市场对近月供应、库存压力
-              和交割紧张程度的定价；事件风险又可能通过供应、运输、库存、地缘政治或市场情绪影响价格预期。
-            </p>
-            <p>
-              问题在于，这些信息通常分散在不同页面和不同叙述中。行情图表、期限结构、新闻事件和分析结论
-              彼此割裂，用户需要自己在多个信息源之间切换、判断和整合。
-            </p>
-            <p>
-              这个项目的目标，不是做一个直接给出涨跌结论的页面，而是尝试把原本依赖人工阅读的蜡烛图分析过程
-              拆开，重新组织成一条可运行的工程链路：前面接入原油市场数据和期限结构信息，中间用规则和结构化事实
-              压缩候选信息，后面再让 LLM 处理解释、归纳和情景推演，最后把结果组织成一个能够被用户读懂的市场分析界面。
-            </p>
           </div>
         </Section>
 

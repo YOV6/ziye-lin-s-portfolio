@@ -41,7 +41,7 @@ export default function Projects() {
             >
               <ProjectCard
                 project={project}
-                featured={index === 0}
+                featured={project.slug === "crypto-report" || project.slug === "oil-dashboard"}
               />
             </div>
           ))}
