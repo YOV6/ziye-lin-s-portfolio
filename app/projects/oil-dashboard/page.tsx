@@ -7,19 +7,18 @@ import Footer from "@/components/Footer";
 import styles from "./page.module.css";
 
 export const metadata: Metadata = {
-  title: "AI 原油市场情报仪表盘 | Ziye Lin",
+  title: "基于蜡烛图技术的 AI 原油市场分析 | Ziye Lin",
   description:
-    "面向 WTI 与上海原油 SC 的 AI 油市情报产品，结合蜡烛图解读、期限结构分析、事件风险监测和三情景推演，生成结构化短期市场分析。",
+    "一个基于《日本蜡烛图技术》分析框架的 AI 原油市场分析项目，面向 WTI 与上海原油 SC，整合 K 线解读、期限结构、事件风险监测和三情景推演，生成结构化短期市场分析。",
 };
 
 const tags = [
-  "AI Product",
-  "Financial Dashboard",
+  "AI 分析",
+  "原油市场",
+  "数据产品",
   "Python",
   "React",
-  "LLM Pipeline",
-  "Data Analytics",
-  "Oil Market",
+  "LLM",
 ];
 
 const productCapabilities = [
@@ -81,9 +80,9 @@ const systemLayers = [
       "通过 Python 脚本获取并整理 WTI、SC 和 SC 期限结构相关数据，将原始行情处理成前端和 LLM 都可消费的结构化 Market Facts。",
   },
   {
-    title: "分析层",
+    title: "蜡烛图初筛层",
     description:
-      "蜡烛图分析不依赖 LLM 从零开始读图，而是先由规则和事实构建候选形态、价格区间、支撑阻力和趋势上下文，再交给 LLM 进行解释和归纳。",
+      "蜡烛图分析不依赖 LLM 从零开始读图，而是先根据《日本蜡烛图技术》的分析思路，围绕候选形态、价格区间、支撑阻力和趋势上下文构建结构化 handoff，再交给 LLM 进行解释和归纳。",
   },
   {
     title: "LLM 层",
@@ -98,13 +97,13 @@ const systemLayers = [
 ];
 
 const contributions = [
-  "设计 AI 原油市场情报仪表盘的产品结构；",
+  "设计基于蜡烛图技术的 AI 原油市场分析产品结构；",
   "搭建 WTI、上海原油 SC 和 SC 期限结构的分析链路；",
-  "将蜡烛图技术分析转化为可被程序和 LLM 使用的结构化流程；",
+  "将《日本蜡烛图技术》中的形态阅读思路转化为可被程序和 LLM 使用的结构化流程；",
   "设计 Market Facts → LLM Analysis → Frontend Payload 的中间层；",
   "为 LLM 输出设置数据边界，降低幻觉和未验证信息进入页面的风险；",
   "构建市场简报、事件风险监测和三情景推演等用户可见模块；",
-  "完成 React 前端展示和 Vercel 静态部署。",
+  "完成 React 前端展示、静态快照导出和 Vercel 部署。",
 ];
 
 function Section({
@@ -138,17 +137,14 @@ export default function OilDashboardPage() {
         <section className={styles.hero}>
           <div className={styles.heroInner}>
             <div className={styles.heroCopy}>
-              <span className={styles.eyebrow}>项目</span>
-              <h1>AI 原油市场情报仪表盘</h1>
-              <p className={styles.heroLead}>
-                一个面向 WTI 与上海原油 SC 的 AI 油市情报产品，结合蜡烛图解读、期限结构分析、
-                事件风险监测和三情景推演，生成结构化的短期市场分析。
-              </p>
+              <span className={styles.eyebrow}>PROJECT</span>
+              
+              <h2>基于蜡烛图技术的</h2>
+              <h1>AI 原油市场分析</h1>
 
               <p className={styles.heroText}>
-                这个项目尝试把分散的原油市场信息重新组织成一个可阅读、可解释、可展示的情报仪表盘。
-                它不只是展示行情图表，而是将金融数据处理、蜡烛图技术分析、事件风险解释、LLM 输出约束
-                和前端产品化整合到同一个界面中。
+                把一套原本依赖人工阅读和市场经验的图表分析过程，拆解成产品链路。
+                处理金融数据，展示行情图表，利用AI进行蜡烛图形态分析，以提供原油期货市场的深度洞察。
               </p>
 
               <div className={styles.tags}>
@@ -161,7 +157,7 @@ export default function OilDashboardPage() {
 
               <div className={styles.heroActions}>
                 <Link href="/oil-dashboard/index.html" className={styles.primaryButton} target="_blank">
-                  打开在线演示
+                  查看 Demo
                 </Link>
                 <Link href="#methodology" className={styles.secondaryButton}>
                   查看分析方法
@@ -193,8 +189,7 @@ export default function OilDashboardPage() {
                 </div>
               </div>
               <p>
-                作品集版本为静态研究演示，保留真实 dashboard 界面和一次完整市场分析快照，
-                无需后端服务或数据库部署即可运行。
+                Demo 版本为静态研究演示，保留真实仪表盘界面和一次完整市场分析快照。
               </p>
             </div>
           </div>
@@ -213,7 +208,7 @@ export default function OilDashboardPage() {
 
           <p className={styles.demoIntro}>
             下方嵌入的是 oil-dashboard 的静态演示版本。该版本保留完整前端结构、真实页面交互和一次完整
-            市场分析快照，用于展示数据产品的信息组织、分析链路和 AI 输出形式。建议在浏览器点击右上方，打开完整
+            市场分析快照，用于展示数据产品的信息组织、分析链路和 AI 输出形式。建议在桌面端打开完整
             仪表盘，以获得最佳浏览体验。
           </p>
 
@@ -226,7 +221,7 @@ export default function OilDashboardPage() {
             </div>
             <iframe
               src="/oil-dashboard/index.html"
-              title="AI 原油市场情报仪表盘演示"
+              title="AI 原油市场分析演示"
               className={styles.dashboardFrame}
               loading="lazy"
             />
@@ -239,35 +234,6 @@ export default function OilDashboardPage() {
             </Link>
           </div>
         </section>
-
-        <Section eyebrow="项目背景" title="从分散市场信号到一体化油市情报界面">
-          <div className={styles.textBlock}>
-            <p>
-              原油市场的短期判断往往不是由单一价格决定的。WTI 代表国际原油基准价格，上海原油 SC
-              反映国内原油市场和人民币计价体系下的价格表现；期限结构提示市场对近月供应、库存压力
-              和交割紧张程度的定价；事件风险又可能通过供应、运输、库存、地缘政治或市场情绪影响价格预期。
-            </p>
-            <p>
-              问题在于，这些信息通常分散在不同页面和不同叙述中。行情图表、期限结构、新闻事件和分析结论
-              彼此割裂，用户需要自己在多个信息源之间切换、判断和整合。
-            </p>
-            <p>
-              这个项目的目标，是将这些分散信息组织成一个油市情报仪表盘：先由数据链路构建可验证的
-              Market Facts，再让 LLM 基于已提供事实生成解释、摘要和情景推演，最后以产品化界面展示给用户。
-            </p>
-          </div>
-        </Section>
-
-        <Section eyebrow="产品能力" title="这个仪表盘解决什么问题">
-          <div className={styles.cardGrid}>
-            {productCapabilities.map((item) => (
-              <article key={item.title} className={styles.card}>
-                <h3>{item.title}</h3>
-                <p>{item.description}</p>
-              </article>
-            ))}
-          </div>
-        </Section>
 
         <Section eyebrow="核心模块" title="五个核心分析模块">
           <div className={styles.moduleList}>
@@ -283,7 +249,7 @@ export default function OilDashboardPage() {
           </div>
         </Section>
 
-        <Section eyebrow="系统设计" title="基于事实约束的 LLM 分析链路">
+        <Section eyebrow="系统设计" title="把人工图表阅读拆成可运行的工程链路">
           <div className={styles.layerGrid}>
             {systemLayers.map((layer) => (
               <article key={layer.title} className={styles.layerCard}>
@@ -302,7 +268,18 @@ export default function OilDashboardPage() {
           </div>
         </Section>
 
-        <Section eyebrow="我的工作" title="我的工作">
+        <Section eyebrow="产品能力" title="产品解决什么问题">
+          <div className={styles.cardGrid}>
+            {productCapabilities.map((item) => (
+              <article key={item.title} className={styles.card}>
+                <h3>{item.title}</h3>
+                <p>{item.description}</p>
+              </article>
+            ))}
+          </div>
+        </Section>
+
+        <Section eyebrow="我的工作" title="从方法拆解到产品实现">
           <div className={styles.roleGrid}>
             <div className={styles.roleIntro}>
               <p>
@@ -310,8 +287,9 @@ export default function OilDashboardPage() {
                 前端展示到最终部署的完整流程。
               </p>
               <p>
-                重点不是单纯做一个好看的页面，而是让整个分析链路尽可能可信：不使用伪造数据，
-                不让默认值伪装成真实市场信息，不让 LLM 基于未提供的数据生成结论。
+                这个项目的重点不是单纯做一个好看的页面，而是验证一条更完整的产品链路：如何把蜡烛图技术分析、
+                原油市场数据、事件风险信息和 LLM 解释能力组织在一起，同时保证页面中的结论来自可追溯的数据
+                和明确的分析边界。
               </p>
             </div>
 
@@ -323,14 +301,14 @@ export default function OilDashboardPage() {
           </div>
         </Section>
 
-        <Section id="methodology" eyebrow="方法说明与边界" title="分析方法与项目边界">
+        <Section id="methodology" eyebrow="方法说明与边界" title="基于《日本蜡烛图技术》的分析框架">
           <div className={styles.methodologyBox}>
             <div>
               <h3>蜡烛图方法</h3>
               <p>
-                蜡烛图部分借鉴《日本蜡烛图技术》中的经典分析框架，但不将单一形态视为直接买卖信号。
-                系统会综合观察实体长度、上下影线、前序趋势、区间位置、支撑阻力以及后续确认条件，
-                再生成解释性结论。
+                蜡烛图部分借鉴《日本蜡烛图技术》中的经典分析框架。项目并不把单一形态视为直接买卖信号，
+                而是将形态放回前序趋势、区间位置、支撑阻力和后续确认条件中理解，综合观察实体长度、
+                上下影线、前序趋势后再生成解释性结论。
               </p>
             </div>
 
@@ -353,21 +331,27 @@ export default function OilDashboardPage() {
           </div>
         </Section>
 
-        <Section eyebrow="下一步" title="后续可扩展方向">
-          <div className={styles.nextSteps}>
-            <article>
-              <span>01</span>
-              <p>探索更稳定的期货 OHLCV 数据源，提高 WTI 与 Brent 数据完整性。</p>
-            </article>
-            <article>
-              <span>02</span>
-              <p>在可靠数据源成熟后，增加库存、OPEC/IEA、宏观指标等基本面模块。</p>
-            </article>
-            <article>
-              <span>03</span>
-              <p>将静态 Demo 升级为可定时更新的油市情报页面。</p>
-            </article>
+        <Section eyebrow="项目背景" title="为什么做这个项目">
+          <div className={styles.textBlock}>
+            <p>
+              原油市场的短期判断往往不是由单一价格决定的。WTI 代表国际原油基准价格，上海原油 SC
+              反映国内原油市场和人民币计价体系下的价格表现；期限结构提示市场对近月供应、库存压力
+              和交割紧张程度的定价；事件风险又可能通过供应、运输、库存、地缘政治或市场情绪影响价格预期。
+            </p>
+            <p>
+              问题在于，这些信息通常分散在不同页面和不同叙述中。行情图表、期限结构、新闻事件和分析结论
+              彼此割裂，用户需要自己在多个信息源之间切换、判断和整合。
+            </p>
+            <p>
+              这个项目的目标，不是做一个直接给出涨跌结论的页面，而是尝试把原本依赖人工阅读的蜡烛图分析过程
+              拆开，重新组织成一条可运行的工程链路：前面接入原油市场数据和期限结构信息，中间用规则和结构化事实
+              压缩候选信息，后面再让 LLM 处理解释、归纳和情景推演，最后把结果组织成一个能够被用户读懂的市场分析界面。
+            </p>
           </div>
+        </Section>
+
+        <Section eyebrow="下一步" title="即将正式上线">
+          
         </Section>
 
         <section className={styles.finalCta}>

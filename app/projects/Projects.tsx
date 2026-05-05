@@ -12,10 +12,10 @@ const projects = [
   },
   {
     slug: "oil-dashboard",
-    title: "AI 原油市场情报仪表盘",
+    title: "AI 原油市场分析",
     description:
-      "面向 WTI 与上海原油 SC 的 AI 数据产品，整合 K 线解读、期限结构、事件风险和三情景推演。",
-    tags: ["AI Product", "Python", "React", "LLM", "Dashboard"],
+      "基于蜡烛图技术，整合 WTI、上海原油 SC、期限结构、事件风险和三情景推演的 AI 数据产品。",
+    tags: ["AI 分析", "原油市场", "数据产品", "Python", "React", "LLM"],
     status: "completed" as const,
     link: "/projects/oil-dashboard",
   },
