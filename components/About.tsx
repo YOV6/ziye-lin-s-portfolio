@@ -4,18 +4,10 @@ const skills = [
   "Python",
   "SQL",
   "R",
-  "AI",
+  "Vibe Coding",
   "因果推断",
-  "AB实验",
-  "运筹学",
-  "NLP",
-  "数据可视化",
-];
-
-const interests = [
-  { icon: "◆", text: "产品设计与数据分析" },
-  { icon: "◆", text: "机器学习与应用" },
-  { icon: "◆", text: "结构化问题求解" },
+  "AB实验",,
+  "Tableau",
 ];
 
 const education = [
@@ -55,23 +47,6 @@ const research = {
       "通过 agent-based 模型建模案例研究所提炼的机制，研究新兴科技市场中的企业创新绩效。",
   },
 };
-
-const internships = [
-  {
-    company: "猿辅导",
-    role: "运营管理实习生",
-    period: "2024.10 — 2025.01",
-    description:
-      "使用 SQL 分析在线试卷需求，开发 Python 自动更新脚本，支持多学科内容生产与流程协同。",
-  },
-  {
-    company: "欧泰谱",
-    role: "数据分析实习生",
-    period: "2023.06 — 2023.08",
-    description:
-      "处理抖音、天猫、京东等平台数据，开发 R 自动数据清洗脚本，参与 CRM 客户分析。",
-  },
-];
 
 export default function About() {
   return (
@@ -147,23 +122,6 @@ export default function About() {
               </div>
             </div>
 
-            <div className={styles.sectionBlock}>
-              <h3 className={styles.sectionTitle}>实习经历</h3>
-              <div className={styles.internshipList}>
-                {internships.map((item, index) => (
-                  <div key={index} className={styles.internshipItem}>
-                    <div className={styles.internshipHeader}>
-                      <span className={styles.companyName}>{item.company}</span>
-                      <span className={styles.period}>{item.period}</span>
-                    </div>
-                    <div className={styles.internshipRole}>{item.role}</div>
-                    <div className={styles.internshipDesc}>
-                      {item.description}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
           </div>
 
           <div className={styles.sidebar}>
@@ -178,17 +136,6 @@ export default function About() {
               </div>
             </div>
 
-            <div className={styles.interestsCard}>
-              <h3 className={styles.cardTitle}>专注领域</h3>
-              <ul className={styles.interestList}>
-                {interests.map((item, index) => (
-                  <li key={index} className={styles.interestItem}>
-                    <span className={styles.interestIcon}>{item.icon}</span>
-                    <span>{item.text}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
           </div>
         </div>
       </div>
