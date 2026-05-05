@@ -5,19 +5,19 @@ const projects = [
   {
     slug: "crypto-report",
     title: "基于蜡烛图技术的加密货币市场分析",
-    description:
-      "一个 AI 分析多周期 K 线的产品原型",
+    description: "一个 AI 分析多周期 K 线的产品原型",
     tags: ["AI", "Python", "SQLite", "LLM", "React"],
     status: "completed" as const,
     link: "/projects/crypto-report",
   },
   {
-    slug: "crude-oil",
-    title: "原油期货市场分析与预测",
+    slug: "oil-dashboard",
+    title: "AI 原油市场情报仪表盘",
     description:
-      "不是原型，是应用。原油期货 K 线分析、市场趋势预测和交易策略建议。",
-    tags: ["AI", "Python", "LLM"],
-    status: "coming-soon" as const,
+      "面向 WTI 与上海原油 SC 的 AI 数据产品，整合 K 线解读、期限结构、事件风险和三情景推演。",
+    tags: ["AI Product", "Python", "React", "LLM", "Dashboard"],
+    status: "completed" as const,
+    link: "/projects/oil-dashboard",
   },
 ];
 

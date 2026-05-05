@@ -1,0 +1,1326 @@
+{
+  "schema_version": "0.2.0",
+  "page_id": "global_oil_dashboard_home",
+  "page_type": "homepage",
+  "generated_at": "2026-05-05T09:24:50.215714+00:00",
+  "page_meta": {
+    "title": "原油市场仪表盘",
+    "subtitle": "WTI · SC · Brent 参考价格",
+    "disclaimer": "本页面仅供市场观察，不构成投资建议。"
+  },
+  "overview_strip": {
+    "global_bias": {
+      "value": "bullish",
+      "label": "市场总倾向"
+    },
+    "leading_benchmark": {
+      "value": "SC",
+      "label": "领先基准"
+    },
+    "curve_state": {
+      "value": "backwardation",
+      "label": "曲线状态"
+    },
+    "brent_reference": {
+      "value": 113.89,
+      "label": "Brent 参考价",
+      "source": "alphavantage",
+      "reference_only": true,
+      "market_date": "2026-04-27"
+    }
+  },
+  "sections": [
+    {
+      "section_id": "benchmark_cards",
+      "section_type": "benchmark_card_grid",
+      "title": "原油基准价格",
+      "layout": {
+        "desktop_columns": 2,
+        "mobile_columns": 1
+      },
+      "cards": [
+        {
+          "id": "wti_near",
+          "card_type": "benchmark_card",
+          "title": "WTI 原油",
+          "subtitle": "CME / NYMEX · 近月合约",
+          "instrument": {
+            "benchmark": "WTI",
+            "exchange": "CME / NYMEX",
+            "contract_code": "CL",
+            "contract_label": "Near Month",
+            "region": "US"
+          },
+          "market_role": "US sentiment anchor",
+          "timeframe_options": [
+            "1D"
+          ],
+          "default_timeframe": "1D",
+          "chart": {
+            "chart_type": "candlestick",
+            "symbol": "WTI_NEAR",
+            "timeframe": "1D",
+            "primary_series_ref": "series_wti_near_1d",
+            "overlays": [
+              "support_resistance",
+              "ema_20",
+              "ema_50"
+            ]
+          },
+          "signal_summary": {
+            "current_pattern": {
+              "name": "暂无明确形态",
+              "label": "暂无明确形态",
+              "family": "llm_candlestick_sop",
+              "direction_bias": "中性观察"
+            },
+            "location_context": {
+              "label": null,
+              "zone_type": null,
+              "zone_strength": null
+            },
+            "confirmation_status": {
+              "value": null,
+              "label": null
+            }
+          },
+          "risk_anchors": {
+            "invalidation_level": {
+              "value": null,
+              "label": null
+            },
+            "key_support": [],
+            "key_resistance": []
+          },
+          "structure_info": {
+            "trend_state": "neutral",
+            "trend_label": null,
+            "relative_strength": {
+              "vs": null,
+              "value": null
+            }
+          },
+          "analytics": {
+            "pattern_score": null,
+            "location_score": null,
+            "confirmation_score": null,
+            "composite_signal_score": null,
+            "status_tag": "NOMINAL"
+          },
+          "one_liner": "最新K线为小实体阴线，显示价格在阻力区86.30-86.40附近遇阻回落，但未形成明确反转或持续形态。",
+          "status_tags": [
+            "llm_enriched"
+          ],
+          "last_updated": "2026-05-05T09:24:50.215714+00:00",
+          "market_context": {
+            "recent_trend_fact": "过去 10 根 K 线收盘价整体上移",
+            "range_position": "中部",
+            "near_support": 82.6,
+            "near_resistance": 86.3
+          },
+          "llm_analysis": {
+            "card_id": "wti_near",
+            "analysis_type": "candlestick",
+            "llm_status": "ok",
+            "provider": "openai_compatible",
+            "title": "蜡烛图解读",
+            "text": "形态观察：最新K线收于85.37，开盘85.91，最高86.40，最低84.81，形成实体0.54的小阴线；上下影线分别为0.49和0.56，收盘位置处于当日区间35%处，偏于下端。前1根K线为实体0.91的阴线但上影线长达1.17，显示价格在86.40附近存在明显抛压；近期3根K线整体呈现冲高回落特征；过去10根收盘价整体上移，短期趋势偏多但节奏有所减缓。；价格位置：当前价格85.37处于近期区间（81.79-89.34）中部位置，距最近阻力86.30仅差0.07美元，最高已触及86.40；最近支撑在82.60，距当前价格约2.77美元；价格在阻力区附近收出上影线，短期动能有所减弱。；确认与风险：当前K线不满足锤子线、流星线或吞没等经典形态的成立条件（小实体、上下影线近乎相等、缺乏量能配合），无法确认反转信号；前1根K线上影线虽长但收盘仍在高位，尚未形成明确的看跌结构；整体形态处于整理阶段，多空信号均不清晰，后续需观察价格能否有效突破86.30-86.40阻力区，或在支撑82.60附近企稳。",
+            "generated_at": "2026-05-05T09:22:56.280000+00:00",
+            "source_payload_hash": "1dc97f57694ed3199b4d850951e5491e",
+            "summary": "最新K线为小实体阴线，显示价格在阻力区86.30-86.40附近遇阻回落，但未形成明确反转或持续形态。",
+            "pattern_name": "暂无明确形态",
+            "pattern_status": "no_clear_pattern",
+            "directional_read": "中性观察",
+            "confidence_level": "low",
+            "evidence_used": [
+              "最新K线：小实体阴线（实体0.54），上下影线相近，收盘位置35%处偏低下端",
+              "前1根K线：实体0.91阴线但上影线1.17明显，显示86.40附近抛压",
+              "近期3根K线组合：冲高后回落，价格在高位整理",
+              "趋势事实：过去10根收盘价整体上移，短期偏多",
+              "价格区间：近期高点89.34，低点81.79，当前85.37处于中部",
+              "支撑阻力：阻力86.30/86.40，支撑82.60"
+            ],
+            "confirmation_conditions": [
+              "后续价格能否突破86.40并站稳，确认阻力转化为支撑",
+              "若回落，82.60支撑能否形成止跌K线（如锤子线或长下影线）",
+              "成交量是否配合放大以确认方向选择",
+              "前1根K线收盘87.26是否构成支撑，需观察价格是否回踩该位置"
+            ],
+            "risk_note": "当前处于趋势调整阶段，价格方向不明朗；若86.40阻力持续有效，可能进一步回落至82.60支撑；由于缺乏量能数据，形态信号可靠性受限；整体趋势虽偏多但短期动能减弱，需警惕高位整理后选择方向的波动风险。",
+            "watch_items": [
+              "关注价格能否突破86.30-86.40阻力区间",
+              "若回撤，观察82.60支撑附近是否出现止跌信号",
+              "留意前1根K线收盘87.26是否转化为支撑参考",
+              "量能变化是否能配合确认形态有效性"
+            ]
+          }
+        },
+        {
+          "id": "sc_near",
+          "card_type": "benchmark_card",
+          "title": "上海原油 SC",
+          "subtitle": "INE · 近月合约",
+          "instrument": {
+            "benchmark": "SC",
+            "exchange": "INE",
+            "contract_code": "SC",
+            "contract_label": "Near Month",
+            "region": "China"
+          },
+          "market_role": "local anchor",
+          "timeframe_options": [
+            "1D"
+          ],
+          "default_timeframe": "1D",
+          "chart": {
+            "chart_type": "candlestick",
+            "symbol": "SC_NEAR",
+            "timeframe": "1D",
+            "primary_series_ref": "series_sc_near_1d",
+            "overlays": [
+              "support_resistance",
+              "ema_20",
+              "ema_50"
+            ]
+          },
+          "signal_summary": {
+            "current_pattern": {
+              "name": "暂无明确形态",
+              "label": "暂无明确形态",
+              "family": "llm_candlestick_sop",
+              "direction_bias": "中性观察"
+            },
+            "location_context": {
+              "label": null,
+              "zone_type": null,
+              "zone_strength": null
+            },
+            "confirmation_status": {
+              "value": null,
+              "label": null
+            }
+          },
+          "risk_anchors": {
+            "invalidation_level": {
+              "value": null,
+              "label": null
+            },
+            "key_support": [
+              {
+                "label": "支撑1",
+                "value": 648.1
+              }
+            ],
+            "key_resistance": []
+          },
+          "structure_info": {
+            "trend_state": "uptrend",
+            "trend_label": null,
+            "relative_strength": {
+              "vs": null,
+              "value": null
+            }
+          },
+          "analytics": {
+            "pattern_score": null,
+            "location_score": null,
+            "confirmation_score": null,
+            "composite_signal_score": null,
+            "status_tag": "NOMINAL"
+          },
+          "one_liner": "最新K线为带长下影线的阳线，收于区间高位但处于阻力区域，无明确形态可识别。",
+          "status_tags": [
+            "llm_enriched"
+          ],
+          "last_updated": "2026-05-05T09:24:50.215714+00:00",
+          "market_context": {
+            "recent_trend_fact": "过去 10 根 K 线收盘价整体上移",
+            "range_position": "中部",
+            "near_support": 624.1,
+            "near_resistance": null
+          },
+          "llm_analysis": {
+            "card_id": "sc_near",
+            "analysis_type": "candlestick",
+            "llm_status": "ok",
+            "provider": "openai_compatible",
+            "title": "蜡烛图解读",
+            "text": "① 形态观察：最新K线收于675.40当日最高点，实体8.90点、下影线18.40点，无上影线，收盘位置100%，蜡烛实体占近期区间0.33。前3根K线连续收阳，整体收盘价上移趋势明显，形成小幅上升节奏。多根K线均带有较长下影线，显示下方有一定承接力量；② 价格位置：当前价格675.40已触及近期阻力位662.00-675.00区间上沿，处于近期区间（590.00-763.30）的中部偏上位置，距区间高点763.30仍有约88点空间。最近支撑624.10位于下方较远处，当前回调空间较大；③ 确认与风险：虽然长下影线通常反映下方支撑，但价格已运行至阻力区域而非低位，无法构成典型的底部反转形态。后续若能有效突破675阻力并创出新高，方可视为延续信号；若跌破648.10则近期支撑失效，将破坏当前上升节奏。",
+            "generated_at": "2026-05-05T09:23:37.498000+00:00",
+            "source_payload_hash": "b8e55608d8a35cbd5b5ee632836b7243",
+            "summary": "最新K线为带长下影线的阳线，收于区间高位但处于阻力区域，无明确形态可识别。",
+            "pattern_name": "暂无明确形态",
+            "pattern_status": "no_clear_pattern",
+            "directional_read": "中性观察",
+            "confidence_level": "low",
+            "evidence_used": [
+              "过去10根K线收盘价整体上移",
+              "最新K线收盘675.40（收于当日最高），实体8.90，下影线18.40，无上影线",
+              "收盘位置100%（当日最高点收盘）",
+              "前3根K线依次收阳：654.3→661.9→648.0→当前675.4",
+              "阻力位662.00、675.00，当前价格已触及第一阻力上沿",
+              "近期区间590.00-763.30，当前处于区间中部",
+              "最近支撑624.10，距当前价格较远"
+            ],
+            "confirmation_conditions": [
+              "后续价格能否有效突破并站稳675.00阻力位上方",
+              "突破时成交量是否明显放大（需外部数据验证）",
+              "回调时能否在648.10-662.00区间获得支撑",
+              "能否继续创出高于675.40的新高，延续整体上升节奏"
+            ],
+            "risk_note": "当前信号不确定性较大，主要风险点包括：一是675附近为阻力区域，价格可能在此遇阻回落；二是近期区间中部位置信号意义模糊，不具备低位反转条件；三是下影线支撑尚未经过回踩确认有效性；四是缺乏成交量数据验证当前价格运行的真实性；五是若跌破648.10将破坏近期上升节奏。",
+            "watch_items": [
+              "后续K线在675区域的反应：若遇阻回落、形成上影线或吞没形态，则短期偏空",
+              "回调深度：关注价格能否在662.00-648.10区间获得支撑",
+              "收盘位置变化：若连续两日收于高位且实体放大，利于多头",
+              "整体趋势延续性：能否继续推升至663-675区间上方",
+              "量能变化：当前未提供成交量数据，需后续关注以确认形态有效性",
+              "外部因素：库存数据、宏观动态等验证条件当前未提供，需持续关注"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "section_id": "structure_cards",
+      "section_type": "structure_card_grid",
+      "title": "期限结构分析",
+      "layout": {
+        "desktop_columns": 1,
+        "mobile_columns": 1
+      },
+      "cards": [
+        {
+          "id": "sc_term_structure",
+          "card_type": "structure_card",
+          "structure_type": "term_structure",
+          "title": "SC 期限结构",
+          "subtitle": "近月 vs 次近月 vs 季度",
+          "instrument": {
+            "benchmark": "SC",
+            "legs": [
+              "near_month",
+              "next_month",
+              "quarter_month"
+            ]
+          },
+          "market_role": "time-dimension pricing layer",
+          "timeframe_options": [
+            "1D"
+          ],
+          "default_timeframe": "1D",
+          "chart": {
+            "chart_type": "term_curve",
+            "symbol": "SC_TERM_STRUCTURE",
+            "timeframe": "1D",
+            "primary_series_ref": null,
+            "overlays": [
+              "curve_labels"
+            ]
+          },
+          "signal_summary": {
+            "current_pattern": {
+              "name": "backwardation",
+              "label": "backwardation",
+              "family": "curve_structure",
+              "direction_bias": "yes"
+            },
+            "location_context": {
+              "label": "近次月差 13.60",
+              "zone_type": "curve_shape",
+              "zone_strength": null
+            },
+            "confirmation_status": {
+              "value": "pending",
+              "label": "待确认"
+            }
+          },
+          "risk_anchors": {
+            "invalidation_level": {
+              "value": null,
+              "label": "N/A"
+            },
+            "key_support": [],
+            "key_resistance": []
+          },
+          "structure_info": {
+            "trend_state": "backwardation",
+            "trend_label": "期限结构: backwardation",
+            "relative_strength": {
+              "vs": null,
+              "value": null
+            }
+          },
+          "analytics": {
+            "curve_state": "backwardation",
+            "near_next_spread": 13.6,
+            "near_quarter_spread": 12.3,
+            "curve_change_3d": null
+          },
+          "one_liner": "SC期限结构维持backwardation，近次月差13.60元，已持续1个交易日。",
+          "status_tags": [
+            "term_structure",
+            "backwardation"
+          ],
+          "last_updated": "2026-05-05T09:24:50.215714+00:00",
+          "llm_analysis": {
+            "card_id": "sc_term_structure",
+            "analysis_type": "term_structure",
+            "llm_status": "ok",
+            "provider": "openai_compatible",
+            "title": "蜡烛图解读",
+            "text": "① 形态观察：上海原油期限结构呈现轻度近月升水状态，近月-次近月价差为13.60，近月-季度月价差为12.30，两个关键价差点均为正值且近月-次近月价差略大于近月-季度月价差，显示近期合约相对远期合约价格更高；② 价格位置：这种价差形态暗示市场参与者预期短期供需相对偏紧，近月合约受到相对支撑，而远月合约升水有限，反映出对中长期供需预期的谨慎态度；③ 确认与风险：该结构在当前数据下保持相对稳定，若后续价差进一步收窄可能意味着短期紧张预期有所缓解，而若价差再次走阔则需关注新的供需驱动因素。",
+            "generated_at": "2026-05-05T09:23:51.460000+00:00",
+            "source_payload_hash": "201a63efc28d78a400543bd3eeba9a0f",
+            "summary": "上海原油呈现轻度近月升水结构，近月与远月价差保持正值但相对平缓，市场预期短期供需略显紧张。",
+            "pattern_name": "",
+            "pattern_status": "",
+            "directional_read": "",
+            "confidence_level": "",
+            "evidence_used": [
+              "近月-次近月价差: 13.60",
+              "近月-季度月价差: 12.30"
+            ],
+            "confirmation_conditions": "需观察后续价差的变动方向，若近月-次近月与近月-季度月价差同步扩大则强化短期偏紧预期，若出现收窄则需重新评估市场供需预期",
+            "risk_note": "期限结构可能因地缘政治事件、OPEC产量政策变化或全球需求波动而出现逆转，近月升水快速转为贴水的风险需持续关注",
+            "watch_items": [
+              "近月-次近月与近月-季度月价差的变化趋势",
+              "跨品种价差比较",
+              "季节性需求变化对外盘的影响"
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "methodology_strip": {
+    "title": "方法说明",
+    "disclaimer": "WTI 和 SC 的每日蜡烛图数据覆盖 canonical 行情。Brent 作为参考价格仅供参考，不参与蜡烛图、价差或结构计算。ULSD 因无可用的免费 OHLCV 数据来源而未纳入 MVP 范围。"
+  },
+  "chart_series": {
+    "series_wti_near_1d": {
+      "benchmark": "WTI",
+      "interval": "1d",
+      "contract_label": "Near Month",
+      "data": [
+        {
+          "time": 1772985600,
+          "open": 92.69,
+          "high": 93.62,
+          "low": 92.010002,
+          "close": 93.0,
+          "volume": 7808700.0
+        },
+        {
+          "time": 1773072000,
+          "open": 92.42,
+          "high": 93.48,
+          "low": 91.48,
+          "close": 92.49,
+          "volume": 5869200.0
+        },
+        {
+          "time": 1773158400,
+          "open": 91.88,
+          "high": 92.12,
+          "low": 89.22,
+          "close": 89.61,
+          "volume": 7661700.0
+        },
+        {
+          "time": 1773244800,
+          "open": 89.13,
+          "high": 89.81,
+          "low": 87.89,
+          "close": 87.95,
+          "volume": 7912800.0
+        },
+        {
+          "time": 1773331200,
+          "open": 89.089996,
+          "high": 89.3,
+          "low": 87.95,
+          "close": 88.84,
+          "volume": 5707600.0
+        },
+        {
+          "time": 1773590400,
+          "open": 89.61,
+          "high": 90.71,
+          "low": 89.2,
+          "close": 90.3,
+          "volume": 5433200.0
+        },
+        {
+          "time": 1773676800,
+          "open": 90.65,
+          "high": 91.48,
+          "low": 89.66,
+          "close": 89.94,
+          "volume": 5236800.0
+        },
+        {
+          "time": 1773763200,
+          "open": 88.81,
+          "high": 88.96,
+          "low": 87.46,
+          "close": 87.52,
+          "volume": 6304800.0
+        },
+        {
+          "time": 1773849600,
+          "open": 87.38,
+          "high": 87.74,
+          "low": 85.46,
+          "close": 85.5,
+          "volume": 7620900.0
+        },
+        {
+          "time": 1773936000,
+          "open": 86.029999,
+          "high": 86.15,
+          "low": 84.07,
+          "close": 85.12,
+          "volume": 12313700.0
+        },
+        {
+          "time": 1774195200,
+          "open": 86.45,
+          "high": 86.6,
+          "low": 84.89,
+          "close": 85.15,
+          "volume": 7341900.0
+        },
+        {
+          "time": 1774281600,
+          "open": 84.58,
+          "high": 85.79,
+          "low": 84.35,
+          "close": 84.53,
+          "volume": 5472100.0
+        },
+        {
+          "time": 1774368000,
+          "open": 85.25,
+          "high": 85.51,
+          "low": 83.95,
+          "close": 85.49,
+          "volume": 6003800.0
+        },
+        {
+          "time": 1774454400,
+          "open": 85.62,
+          "high": 86.22,
+          "low": 84.019997,
+          "close": 84.14,
+          "volume": 4889800.0
+        },
+        {
+          "time": 1774540800,
+          "open": 84.27,
+          "high": 85.53,
+          "low": 83.93,
+          "close": 84.29,
+          "volume": 6808300.0
+        },
+        {
+          "time": 1774800000,
+          "open": 85.52,
+          "high": 86.67,
+          "low": 84.41,
+          "close": 85.73,
+          "volume": 10043800.0
+        },
+        {
+          "time": 1774886400,
+          "open": 85.73,
+          "high": 86.050003,
+          "low": 83.5,
+          "close": 85.23,
+          "volume": 6771600.0
+        },
+        {
+          "time": 1774972800,
+          "open": 84.79,
+          "high": 85.95,
+          "low": 84.59,
+          "close": 85.41,
+          "volume": 5237200.0
+        },
+        {
+          "time": 1775059200,
+          "open": 85.22,
+          "high": 85.47,
+          "low": 84.43,
+          "close": 85.14,
+          "volume": 5588800.0
+        },
+        {
+          "time": 1775404800,
+          "open": 85.18,
+          "high": 85.46,
+          "low": 84.38,
+          "close": 84.53,
+          "volume": 3513400.0
+        },
+        {
+          "time": 1775491200,
+          "open": 84.53,
+          "high": 84.76,
+          "low": 83.07,
+          "close": 83.13,
+          "volume": 6023900.0
+        },
+        {
+          "time": 1775577600,
+          "open": 83.75,
+          "high": 85.61,
+          "low": 83.71,
+          "close": 85.55,
+          "volume": 5845400.0
+        },
+        {
+          "time": 1775664000,
+          "open": 84.72,
+          "high": 86.4,
+          "low": 84.46,
+          "close": 86.040001,
+          "volume": 4699800.0
+        },
+        {
+          "time": 1775750400,
+          "open": 85.95,
+          "high": 86.22,
+          "low": 84.22,
+          "close": 84.34,
+          "volume": 3738200.0
+        },
+        {
+          "time": 1776009600,
+          "open": 84.099998,
+          "high": 84.29,
+          "low": 83.029999,
+          "close": 83.98,
+          "volume": 4704600.0
+        },
+        {
+          "time": 1776096000,
+          "open": 83.34,
+          "high": 84.61,
+          "low": 83.28,
+          "close": 84.16,
+          "volume": 7860300.0
+        },
+        {
+          "time": 1776182400,
+          "open": 84.0,
+          "high": 84.36,
+          "low": 82.6,
+          "close": 83.49,
+          "volume": 5064000.0
+        },
+        {
+          "time": 1776268800,
+          "open": 83.26,
+          "high": 84.31,
+          "low": 83.16,
+          "close": 83.62,
+          "volume": 4323600.0
+        },
+        {
+          "time": 1776355200,
+          "open": 83.7,
+          "high": 86.3,
+          "low": 83.67,
+          "close": 85.81,
+          "volume": 6406300.0
+        },
+        {
+          "time": 1776614400,
+          "open": 84.62,
+          "high": 84.75,
+          "low": 83.019997,
+          "close": 83.53,
+          "volume": 5106900.0
+        },
+        {
+          "time": 1776700800,
+          "open": 84.12,
+          "high": 84.15,
+          "low": 81.79,
+          "close": 81.81,
+          "volume": 5367100.0
+        },
+        {
+          "time": 1776787200,
+          "open": 82.19,
+          "high": 82.71,
+          "low": 81.82,
+          "close": 82.35,
+          "volume": 4342800.0
+        },
+        {
+          "time": 1776873600,
+          "open": 82.7,
+          "high": 84.13,
+          "low": 82.41,
+          "close": 83.72,
+          "volume": 5358800.0
+        },
+        {
+          "time": 1776960000,
+          "open": 84.56,
+          "high": 85.089996,
+          "low": 84.16,
+          "close": 84.65,
+          "volume": 5604000.0
+        },
+        {
+          "time": 1777219200,
+          "open": 84.26,
+          "high": 85.3,
+          "low": 83.86,
+          "close": 84.17,
+          "volume": 4414200.0
+        },
+        {
+          "time": 1777305600,
+          "open": 85.26,
+          "high": 86.33,
+          "low": 84.65,
+          "close": 85.67,
+          "volume": 5568800.0
+        },
+        {
+          "time": 1777392000,
+          "open": 85.14,
+          "high": 85.49,
+          "low": 84.125,
+          "close": 84.49,
+          "volume": 3192137.0
+        },
+        {
+          "time": 1777478400,
+          "open": 84.86,
+          "high": 85.79,
+          "low": 84.66,
+          "close": 85.36,
+          "volume": 7490959.0
+        },
+        {
+          "time": 1777564800,
+          "open": 88.17,
+          "high": 89.34,
+          "low": 86.7,
+          "close": 87.26,
+          "volume": 8932900.0
+        },
+        {
+          "time": 1777824000,
+          "open": 85.91,
+          "high": 86.4,
+          "low": 84.8122,
+          "close": 85.37,
+          "volume": 3499097.0
+        }
+      ],
+      "source": "twelvedata",
+      "source_used": "twelvedata",
+      "is_fallback": false,
+      "data_quality_state": "normal",
+      "as_of": 1777972311459,
+      "provenance_note": "全段同源；source=twelvedata，data_quality_state=normal，is_fallback=False；聚合规则：取最新记录作为series-level值"
+    },
+    "series_sc_near_1d": {
+      "benchmark": "SC",
+      "interval": "1d",
+      "contract_label": "Near Month",
+      "data": [
+        {
+          "time": 1773360000,
+          "open": 727.1,
+          "high": 778.0,
+          "low": 724.0,
+          "close": 750.8,
+          "volume": 142180.0
+        },
+        {
+          "time": 1773619200,
+          "open": 728.3,
+          "high": 799.8,
+          "low": 705.0,
+          "close": 765.5,
+          "volume": 100580.0
+        },
+        {
+          "time": 1773705600,
+          "open": 720.6,
+          "high": 769.1,
+          "low": 708.6,
+          "close": 751.5,
+          "volume": 48562.0
+        },
+        {
+          "time": 1773792000,
+          "open": 738.2,
+          "high": 764.9,
+          "low": 714.2,
+          "close": 727.0,
+          "volume": 18156.0
+        },
+        {
+          "time": 1773878400,
+          "open": 779.9,
+          "high": 814.0,
+          "low": 764.1,
+          "close": 809.0,
+          "volume": 15676.0
+        },
+        {
+          "time": 1773964800,
+          "open": 806.7,
+          "high": 806.7,
+          "low": 721.6,
+          "close": 767.1,
+          "volume": 1928.0
+        },
+        {
+          "time": 1774224000,
+          "open": 767.1,
+          "high": 829.3,
+          "low": 767.1,
+          "close": 824.7,
+          "volume": 556.0
+        },
+        {
+          "time": 1774310400,
+          "open": 742.5,
+          "high": 766.9,
+          "low": 712.5,
+          "close": 732.2,
+          "volume": 759.0
+        },
+        {
+          "time": 1774396800,
+          "open": 732.4,
+          "high": 747.9,
+          "low": 682.9,
+          "close": 715.0,
+          "volume": 772.0
+        },
+        {
+          "time": 1774483200,
+          "open": 714.3,
+          "high": 742.0,
+          "low": 703.7,
+          "close": 725.2,
+          "volume": 1004.0
+        },
+        {
+          "time": 1774569600,
+          "open": 736.1,
+          "high": 736.1,
+          "low": 724.5,
+          "close": 730.6,
+          "volume": 234.0
+        },
+        {
+          "time": 1774828800,
+          "open": 750.0,
+          "high": 774.4,
+          "low": 750.0,
+          "close": 754.0,
+          "volume": 668.0
+        },
+        {
+          "time": 1774915200,
+          "open": 754.0,
+          "high": 760.0,
+          "low": 733.4,
+          "close": 737.9,
+          "volume": 114.0
+        },
+        {
+          "time": 1775001600,
+          "open": 745.0,
+          "high": 745.6,
+          "low": 653.0,
+          "close": 653.8,
+          "volume": 150389.0
+        },
+        {
+          "time": 1775088000,
+          "open": 670.0,
+          "high": 735.5,
+          "low": 649.1,
+          "close": 721.3,
+          "volume": 131450.0
+        },
+        {
+          "time": 1775174400,
+          "open": 760.0,
+          "high": 763.3,
+          "low": 694.8,
+          "close": 722.0,
+          "volume": 146924.0
+        },
+        {
+          "time": 1775520000,
+          "open": 715.5,
+          "high": 724.5,
+          "low": 706.6,
+          "close": 710.0,
+          "volume": 40502.0
+        },
+        {
+          "time": 1775606400,
+          "open": 711.6,
+          "high": 716.1,
+          "low": 608.4,
+          "close": 621.0,
+          "volume": 99641.0
+        },
+        {
+          "time": 1775692800,
+          "open": 604.4,
+          "high": 649.9,
+          "low": 604.4,
+          "close": 640.0,
+          "volume": 72085.0
+        },
+        {
+          "time": 1775779200,
+          "open": 647.8,
+          "high": 649.0,
+          "low": 623.7,
+          "close": 637.3,
+          "volume": 63642.0
+        },
+        {
+          "time": 1776038400,
+          "open": 635.3,
+          "high": 675.0,
+          "low": 631.4,
+          "close": 658.0,
+          "volume": 54358.0
+        },
+        {
+          "time": 1776124800,
+          "open": 656.0,
+          "high": 662.0,
+          "low": 640.0,
+          "close": 651.2,
+          "volume": 47034.0
+        },
+        {
+          "time": 1776211200,
+          "open": 646.5,
+          "high": 648.3,
+          "low": 624.1,
+          "close": 629.9,
+          "volume": 42209.0
+        },
+        {
+          "time": 1776297600,
+          "open": 631.9,
+          "high": 641.7,
+          "low": 630.5,
+          "close": 636.0,
+          "volume": 25049.0
+        },
+        {
+          "time": 1776384000,
+          "open": 638.6,
+          "high": 647.0,
+          "low": 633.7,
+          "close": 640.4,
+          "volume": 14400.0
+        },
+        {
+          "time": 1776643200,
+          "open": 590.0,
+          "high": 626.1,
+          "low": 590.0,
+          "close": 617.7,
+          "volume": 17389.0
+        },
+        {
+          "time": 1776729600,
+          "open": 617.0,
+          "high": 620.7,
+          "low": 604.2,
+          "close": 607.4,
+          "volume": 2592.0
+        },
+        {
+          "time": 1776816000,
+          "open": 613.1,
+          "high": 635.0,
+          "low": 608.5,
+          "close": 617.6,
+          "volume": 1884.0
+        },
+        {
+          "time": 1776902400,
+          "open": 630.6,
+          "high": 648.1,
+          "low": 623.5,
+          "close": 635.3,
+          "volume": 2119.0
+        },
+        {
+          "time": 1776988800,
+          "open": 632.8,
+          "high": 652.6,
+          "low": 628.9,
+          "close": 642.7,
+          "volume": 840.0
+        },
+        {
+          "time": 1777248000,
+          "open": 642.7,
+          "high": 652.0,
+          "low": 632.7,
+          "close": 648.0,
+          "volume": 1834.0
+        },
+        {
+          "time": 1777334400,
+          "open": 648.0,
+          "high": 661.9,
+          "low": 644.8,
+          "close": 661.9,
+          "volume": 587.0
+        },
+        {
+          "time": 1777420800,
+          "open": 659.1,
+          "high": 662.9,
+          "low": 643.2,
+          "close": 654.3,
+          "volume": 14.0
+        },
+        {
+          "time": 1777507200,
+          "open": 666.5,
+          "high": 675.4,
+          "low": 648.1,
+          "close": 675.4,
+          "volume": 6.0
+        }
+      ],
+      "source": "ine",
+      "source_used": "ine",
+      "is_fallback": false,
+      "data_quality_state": "normal",
+      "as_of": 1777507200000,
+      "provenance_note": "全段同源；source=ine，data_quality_state=normal，is_fallback=False；聚合规则：取最新记录作为series-level值"
+    }
+  },
+  "event_risk_monitor": {
+    "status": "ok",
+    "updated_at": "2026-05-05T09:24:50.222751",
+    "source_health": {},
+    "cluster_count": 4,
+    "assessment_count": 4,
+    "llm_explanation_count": 4,
+    "risks": [
+      {
+        "cluster_id": 290,
+        "risk_title": "SPR释放增加短期市场供应，对油价形成潜在下行压力",
+        "event_type": "inventory_report",
+        "risk_direction": "偏利空原油",
+        "impact_axis": [
+          "库存",
+          "官方数据"
+        ],
+        "affected_markets": [
+          "WTI",
+          "Brent"
+        ],
+        "severity_score": 3.0,
+        "immediacy_score": 2.0,
+        "confidence_score": 3.5,
+        "confidence_label": "medium",
+        "impact_path": "Official inventory/supply data update → market reassesses near-term physical balance → short-term WTI/Brent volatility risk.",
+        "why_it_matters": "美国能源部自3月以来从战略石油储备释放了1750万桶原油，这一规模性的库存释放行为直接增加了市场上的短期原油供应。SPR释放通常在供应紧张时期用于稳定市场或抑制价格，因此这一动向可能对WTI和Brent原油价格产生短期下行压力，尤其在当前全球石油市场平衡偏紧的背景下，这一供应增量值得关注。",
+        "impact_explanation": "虽然1750万桶的释放量在短期内增加了市场流动性，但相对于全球日均约1亿桶的消费量而言影响有限，更可能体现为短期波动而非趋势性改变。此外，释放行为本身反映了政策制定者对市场供应的管理意图，其持续性和后续行动仍是未知因素。",
+        "confirmation_signals": [
+          "官方库存数据确认整体库存水平下降",
+          "炼厂开工率上升或进口量减少强化供应增加信号",
+          "市场做空情绪明显增强"
+        ],
+        "invalidation_signals": [
+          "数据修正显示实际释放量小于报告",
+          "市场对此消息反应平淡，价格未出现明显下跌",
+          "其他地区出现供应中断抵消了SPR释放的影响"
+        ],
+        "source_caveat": "此分析基于单一消息来源（EIA），缺乏交叉验证；事件时间跨度（自3月以来）表明并非突发新闻，市场可能已部分消化；释放的具体原因和后续计划未知；缺少与历史SPR释放规模和市场反应的对比数据。",
+        "sources": [
+          {
+            "source_id": "eia",
+            "source_name": "U.S. Energy Information Administration (EIA)",
+            "title": "DOE has released 17.5 million barrels from the Strategic Petroleum Reserve since March",
+            "url": "https://www.eia.gov/todayinenergy/detail.php?id=67625",
+            "published_at": "Thu, 30 Apr 2026 09:00:00 EST"
+          }
+        ],
+        "evidence_quality": "high",
+        "first_seen_at": "Thu, 30 Apr 2026 09:00:00 EST",
+        "last_seen_at": "Thu, 30 Apr 2026 09:00:00 EST",
+        "display_mode": "llm"
+      },
+      {
+        "cluster_id": 288,
+        "risk_title": "霍尔木兹海峡关闭导致能源供应风险",
+        "event_type": "official_energy_update",
+        "risk_direction": "偏利多原油",
+        "impact_axis": [
+          "供应",
+          "地缘"
+        ],
+        "affected_markets": [
+          "WTI",
+          "Brent"
+        ],
+        "severity_score": 2.0,
+        "immediacy_score": 2.0,
+        "confidence_score": 3.5,
+        "confidence_label": "medium",
+        "impact_path": "Official energy data or policy update → market re-prices supply/demand outlook → near-term price sensitivity in WTI/Brent.",
+        "why_it_matters": "霍尔木兹海峡是全球最重要的石油运输通道之一，约占全球石油海运量的20%-25%。该海峡关闭将直接威胁原油和LNG的运输通道，导致供应中断风险上升。虽然当前证据显示LNG价格已出现上涨，但原油市场同样面临类似的供应压力情景。WTI和Brent作为全球两大基准原油价格，将对任何实际的供应中断信号产生即时反应。",
+        "impact_explanation": "霍尔木兹海峡关闭影响的是运输通道而非生产设施本身。如果关闭持续时间较短，可能仅造成延迟交付而非实际供应损失；如果持续较长时间，则可能引发显著的供应缺口。市场应关注实际航运数据和官方能源机构的确认报告。",
+        "confirmation_signals": [
+          "航运跟踪数据显示船只绕道或停滞",
+          "主要石油公司发布供应中断公告",
+          "波斯湾地区出口量数据下降",
+          "EIA或IEA报告确认供应影响"
+        ],
+        "invalidation_signals": [
+          "海峡重新开放",
+          "替代运输路线启用",
+          "实际出口数据未显示下降",
+          "地缘政治紧张局势缓和"
+        ],
+        "source_caveat": "当前证据仅来自EIA单一来源，标题提及LNG价格上涨但未提供具体价格变动幅度或持续时间。缺乏供应中断的实际数据、影响范围评估、以及原油价格的具体反应记录。事件发生时间为未来日期（2026年4月），实际影响尚待验证。",
+        "sources": [
+          {
+            "source_id": "eia",
+            "source_name": "U.S. Energy Information Administration (EIA)",
+            "title": "International LNG prices rise amid Strait of Hormuz closure",
+            "url": "https://www.eia.gov/todayinenergy/detail.php?id=67604",
+            "published_at": "Tue, 28 Apr 2026 09:00:00 EST"
+          }
+        ],
+        "evidence_quality": "high",
+        "first_seen_at": "Tue, 28 Apr 2026 09:00:00 EST",
+        "last_seen_at": "Tue, 28 Apr 2026 09:00:00 EST",
+        "display_mode": "llm"
+      },
+      {
+        "cluster_id": 289,
+        "risk_title": "Brent现货价格升水期货：市场结构信号",
+        "event_type": "official_energy_update",
+        "risk_direction": "方向不明",
+        "impact_axis": [
+          "官方数据",
+          "供应"
+        ],
+        "affected_markets": [
+          "WTI",
+          "Brent"
+        ],
+        "severity_score": 2.0,
+        "immediacy_score": 2.0,
+        "confidence_score": 3.5,
+        "confidence_label": "medium",
+        "impact_path": "Official energy data or policy update → market re-prices supply/demand outlook → near-term price sensitivity in WTI/Brent.",
+        "why_it_matters": "Brent现货价格超越期货价格是一个重要的市场结构信号。通常现货价格低于期货价格（正价差），而现货升水（逆价差）可能反映短期供应紧张或市场对近期供给的担忧。这一现象源于EIA官方数据披露，显示市场正在重新评估供需前景，可能对WTI和Brent短期价格走势产生敏感影响。",
+        "impact_explanation": "现货升水通常表明即期市场偏紧，但需结合库存数据和OPEC+政策综合判断。单独这一现象不足以确定明确的方向性交易机会。",
+        "confirmation_signals": [
+          "如库存持续下降或主要产油国出现意外供应中断"
+        ],
+        "invalidation_signals": [
+          "如库存数据显示库存累积或需求指标走弱"
+        ],
+        "source_caveat": "EIA发布的仅是标题性信息，缺少具体价格数值、时间跨度细节及库存/产量等支撑数据。当前仅有一家机构来源，且snippet内容极为有限，无法充分评估事件的实际影响程度。",
+        "sources": [
+          {
+            "source_id": "eia",
+            "source_name": "U.S. Energy Information Administration (EIA)",
+            "title": "Brent crude oil spot prices surge past futures price in April",
+            "url": "https://www.eia.gov/todayinenergy/detail.php?id=67544",
+            "published_at": "Fri, 24 Apr 2026 09:00:00 EST"
+          }
+        ],
+        "evidence_quality": "high",
+        "first_seen_at": "Fri, 24 Apr 2026 09:00:00 EST",
+        "last_seen_at": "Fri, 24 Apr 2026 09:00:00 EST",
+        "display_mode": "llm"
+      }
+    ]
+  },
+  "benchmark_universe": {
+    "canonical": [
+      "WTI",
+      "SC"
+    ],
+    "reference_only": [
+      "Brent"
+    ],
+    "removed": [
+      "ULSD"
+    ]
+  },
+  "reference_prices": {
+    "Brent": {
+      "source": "alphavantage",
+      "source_used": "alphavantage",
+      "value": 113.89,
+      "market_date": "2026-04-27",
+      "data_quality_state": "reference",
+      "reference_only": true
+    }
+  },
+  "market_intelligence": {
+    "market_brief": {
+      "module_id": "market_brief",
+      "status": "ok",
+      "market_tone": "neutral",
+      "market_tone_label": "中性",
+      "headline": "WTI与SC原油均处于关键区间中部，方向信号不明朗，期限结构呈轻度近月升水",
+      "summary": "WTI原油与SC上海原油今日均处于关键区间的中间位置，缺乏明确方向性指引。WTI在85.37附近窄幅波动，86.30-86.40阻力区持续有效，价格在此遇阻回落但未形成反转形态；SC在675附近受阻，最新K线虽收出长下影线阳线但未脱离阻力区域。期限结构显示轻度近月升水（backwardation），近远月价差13.60元，暗示短期供需预期略显紧张但结构尚不稳固。整体来看，两个市场均呈现中性观察格局，方向性选择有待价格有效突破区间边界或外部因素触发。",
+      "wti_read": "WTI原油收小实体阴线，价格于86.30-86.40阻力区遇阻回落，最新价85.37位于区间中部，短期动能减弱，暂无明确方向。",
+      "sc_read": "SC原油收长下影线阳线，最新价675.40处于675阻力区域，价格收于区间高位但未形成有效突破，信号不确定性较大。",
+      "term_structure_read": "上海原油期限结构呈轻度近月升水状态，近月与远月价差13.60元，短期供需预期略显紧张但结构稳定性有待验证。",
+      "key_watch_items": [
+        "WTI能否有效突破86.40阻力位，若突破则上看更高区间",
+        "SC在675附近的受阻情况，若持续承压可能回落至区间中部",
+        "WTI下探82.60支撑的有效性，若破位则破坏近期节奏",
+        "SC若跌破648.10将对上升趋势构成威胁",
+        "期限结构从近月升水转为贴水的潜在风险"
+      ],
+      "risk_notes": [
+        "当前处于趋势调整阶段，价格方向不明朗，两个市场均缺乏量能数据验证，形态信号可靠性受限",
+        "WTI若86.40阻力持续有效，可能进一步回落至82.60支撑；SC在675阻力区域存在遇阻回落风险",
+        "期限结构可能因OPEC政策变化、全球需求波动或地缘政治事件而出现逆转，近月升水快速转为贴水的风险需持续关注"
+      ],
+      "data_boundary_note": "数据边界：当前简报基于 WTI/SC 价格行为、SC 期限结构与已展示事件风险生成；未展示或未进入 payload 的库存、成交量、持仓、宏观与 OPEC/IEA 信息不会被用于结论。",
+      "confidence_level": "medium",
+      "source_cards": [
+        "wti_near",
+        "sc_near",
+        "sc_term_structure"
+      ],
+      "generation_metadata": {
+        "provider": "openai_compatible",
+        "model": "LLM_MODEL env var",
+        "generated_at": "2026-05-05T09:24:14.884000+00:00",
+        "source_payload_hash": "6008aad981996fbdf41ec917f8b4d0d0"
+      }
+    },
+    "scenario_analysis": {
+      "module_id": "scenario_analysis",
+      "status": "ok",
+      "as_of": "2026-05-05 17:24",
+      "base_case": "neutral",
+      "base_case_label": "中性震荡",
+      "summary": "当前WTI与SC均处于关键区间中部，期限结构呈轻度近月升水，若两市场维持当前区间震荡格局且期限结构保持稳定，则中性情景延续；若任一市场出现有效突破，则情景将发生转换。",
+      "scenarios": {
+        "bullish": {
+          "title": "上行情景",
+          "probability_label": "次要情景",
+          "summary": "如果WTI原油有效突破86.30-86.40阻力区域且SC同步突破675阻力位，则上行情景成立，两个市场可能延续近期整体上移的节奏，运行至更高价格区间。",
+          "conditions": [
+            "WTI原油价格有效站上并站稳86.30-86.40阻力区域",
+            "SC原油同步突破675阻力位并维持在该位置上方",
+            "SC期限结构维持近月升水状态且价差未收窄"
+          ],
+          "validation_signals": [
+            "WTI价格有效突破86.40并确认支撑",
+            "SC价格突破675后收于该位置上方",
+            "SC近月-次近月价差维持正值或扩大"
+          ],
+          "invalidation_signals": [
+            "WTI在86.40附近再度遇阻回落至86.30以下",
+            "SC在675区域受阻回落至区间中部",
+            "SC期限结构由近月升水转为平坦或远月升水"
+          ],
+          "source_basis": [
+            "WTI price action",
+            "SC price action",
+            "SC term structure"
+          ]
+        },
+        "neutral": {
+          "title": "中性震荡情景",
+          "probability_label": "基准情景",
+          "summary": "如果WTI与SC均维持当前区间震荡格局，价格未有效突破边界且期限结构保持轻度近月升水状态，则中性震荡情景延续，市场缺乏明确方向性指引。",
+          "conditions": [
+            "WTI原油在82.60-86.40区间内运行，价格未有效突破任一边界",
+            "SC原油在648.10-675区间内运行，维持在区间中部",
+            "SC期限结构维持轻度近月升水，价差未出现明显收窄或转势"
+          ],
+          "validation_signals": [
+            "WTI价格回落至86.30以下但未触及82.60支撑",
+            "SC在675下方运行但未跌破648.10支撑",
+            "SC近月-次近月价差维持在10元上方"
+          ],
+          "invalidation_signals": [
+            "WTI有效突破86.40阻力位或下破82.60支撑位",
+            "SC有效突破675阻力位或跌破648.10支撑位",
+            "SC期限结构由近月升水快速转为远月升水"
+          ],
+          "source_basis": [
+            "Market Brief",
+            "WTI price action",
+            "SC price action"
+          ]
+        },
+        "bearish": {
+          "title": "下行情景",
+          "probability_label": "风险情景",
+          "summary": "如果WTI原油回落并有效下破82.60支撑位且SC同步跌破648.10关键支撑，则下行情景成立，两个市场的近期上移节奏将被破坏，价格可能向下重新寻找支撑。",
+          "conditions": [
+            "WTI原油价格回落并有效下破82.60支撑位",
+            "SC原油同步跌破648.10关键支撑位",
+            "SC期限结构由近月升水转为远月升水或平坦化"
+          ],
+          "validation_signals": [
+            "WTI价格有效下破82.60并维持在该位置下方",
+            "SC价格跌破648.10并确认破位有效",
+            "SC近月-次近月价差收窄至5元以内或转为负值"
+          ],
+          "invalidation_signals": [
+            "WTI在82.60获得支撑并反弹回升",
+            "SC在648.10上方企稳并重新上移",
+            "SC期限结构维持或扩大近月升水状态"
+          ],
+          "source_basis": [
+            "WTI price action",
+            "SC price action",
+            "SC term structure"
+          ]
+        }
+      },
+      "key_cross_market_watch": [
+        "WTI与SC的价格联动性：若两者出现同向突破或同向回落，可增强对应情景的可靠性",
+        "SC期限结构的稳定性：若近月升水结构维持，则对中性情景形成支撑；若出现快速收窄或转势，则情景可能发生切换",
+        "WTI在86.30-86.40阻力区的多次受阻情况：若反复测试该阻力区域后回落，可能为下行情景积累动能"
+      ],
+      "data_boundary_note": "本分析严格基于Market Brief、WTI价格行为、SC价格行为和SC期限结构数据。当前未接入成交量、库存、OPEC政策、宏观经济、地缘政治和持仓量等数据，本情景分析不涉及上述维度的判断。",
+      "confidence_level": "low",
+      "source_cards": [
+        "wti_near",
+        "sc_near",
+        "sc_term_structure"
+      ],
+      "generation_metadata": {
+        "provider": "openai_compatible",
+        "model": "LLM_MODEL env var",
+        "generated_at": "2026-05-05T09:24:41.653000+00:00",
+        "source_payload_hash": "ec39dc331d72a88cde6f405a9b36a37d"
+      }
+    }
+  }
+}

@@ -1,0 +1,2835 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>原油市场仪表盘</title>
+  <script crossorigin src="https://unpkg.com/react@18.2.0/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/lightweight-charts@4.1.0/dist/lightweight-charts.standalone.production.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+
+    :root {
+      /* ── Binance Canvas — deep near-black with warm tint ── */
+      --bg-page: #0b0e11;
+      --bg-panel: #13171d;
+      --bg-card: #1e2329;
+      --bg-card-soft: #252b33;
+      --bg-card-hover: #2b3139;
+
+      /* Hairlines — border as surface step, not ink line */
+      --border: #2b3139;
+      --border-strong: #363f49;
+      --divider: #2b3139;
+
+      /* Text — warm white on dark */
+      --text-primary: #eaecef;
+      --text-secondary: #848aa0;
+      --text-muted: #707a8a;
+
+      /* Silver — muted structural language */
+      --accent-silver: #9ba8b6;
+      --accent-silver-2: #acb5c1;
+      --accent-silver-strong: #bdc5cf;
+      --accent-silver-soft: rgba(155,168,182,0.12);
+      --accent-steel: #7a8599;
+
+      /* Gold — single brand accent, does all voltage */
+      --accent-gold: #FCD535;
+      --accent-gold-2: #f0b90b;
+      --accent-gold-soft: rgba(252,213,53,0.10);
+      --accent-amber: #FCD535;
+      --accent-amber-soft: rgba(252,213,53,0.08);
+
+      /* Trading semantics — green/red as text color, not surface */
+      --accent-bullish: #0ecb81;
+      --accent-bullish-soft: rgba(14,203,129,0.10);
+      --accent-bearish: #f6465d;
+      --accent-bearish-soft: rgba(246,70,93,0.10);
+      --accent-neutral: #eaecef;
+      --neutral-soft: rgba(234,236,239,0.08);
+      --accent-live: #FCD535;
+      --accent-degraded: #f0b90b;
+      --pending: #707a8a;
+
+      /* Component Tokens — Binance tight radius */
+      --card-radius: 8px;
+      --card-border: 1px solid var(--border);
+      --card-shadow: none;
+      --card-hover-shadow: none;
+      --card-hover-border: var(--border-strong);
+
+      --accent-oil: #FCD535;
+      --accent-warm: #FCD535;
+      --accent-warm-bg: rgba(252,213,53,0.10);
+
+      /* Chart — flat dark canvas */
+      --chart-grid: rgba(255,255,255,0.04);
+      --chart-bg: #0b0e11;
+      --chart-text: #707a8a;
+
+      /* Chips & badges */
+      --bg-chip: #2b3139;
+      --bg-chip-alt: #252b33;
+      --bg-confirm: rgba(14,203,129,0.08);
+      --border-confirm: rgba(14,203,129,0.20);
+      --text-confirm: #0ecb81;
+      --bg-invalidate: rgba(246,70,93,0.08);
+      --border-invalidate: rgba(246,70,93,0.20);
+      --text-invalidate: #f6465d;
+      --neutral-label: #eaecef;
+
+      /* Spacing Scale — Binance 4px base */
+      --space-1: 4px;
+      --space-2: 8px;
+      --space-3: 12px;
+      --space-4: 16px;
+      --space-5: 24px;
+      --space-6: 32px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg-page);
+      color: var(--text-primary);
+      font-family: Inter, "SF Pro Display", "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      font-variant-numeric: tabular-nums;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: var(--bg-page); }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+    /* ── Card Base — flat Binance surface ── */
+    .card {
+      background: var(--bg-card);
+      border: var(--card-border);
+      border-radius: var(--card-radius);
+      box-shadow: var(--card-shadow);
+      transition: border-color 0.15s ease;
+    }
+    .card:hover {
+      border-color: var(--card-hover-border);
+      transform: none;
+      box-shadow: none;
+    }
+  
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script>
+const {
+  useState,
+  useEffect,
+  useRef
+} = React;
+
+// ─── Chart Color Constants (centralized) ───────────────────────────────
+const CHART_COLORS = {
+  bullish: '#0ecb81',
+  bearish: '#f6465d',
+  neutral: '#9ba8b6',
+  live: '#FCD535',
+  pending: '#707a8a',
+  grid: 'rgba(255,255,255,0.04)',
+  chartBg: '#0b0e11',
+  chartText: '#707a8a',
+  border: '#2b3139',
+  oil: '#FCD535'
+};
+
+// ─── Display Label Maps ────────────────────────────────────────────────
+const PATTERN_NAME_MAP = {
+  no_pattern: '无明确形态',
+  hammer: '锤子线',
+  hanging_man: '吊颈线',
+  bullish_engulfing: '看涨吞没',
+  bearish_engulfing: '看跌吞没',
+  doji: '十字星',
+  morning_star: '早晨之星',
+  evening_star: '黄昏之星'
+};
+const TREND_DIRECTION_MAP = {
+  uptrend: '上涨趋势',
+  downtrend: '下跌趋势',
+  neutral: '横盘整理'
+};
+const CURVE_STATE_MAP = {
+  backwardation: '反向市场',
+  contango: '正向市场',
+  flat: '平坦结构'
+};
+const BIAS_MAP = {
+  bullish_reversal: '看涨反转',
+  bearish_reversal: '看跌反转',
+  bullish_continuation: '看涨延续',
+  bearish_continuation: '看跌延续',
+  neutral: '中性'
+};
+const STATUS_TAG_DISPLAY_MAP = {
+  rule_based_fallback: '规则信号',
+  deterministic_signal: '规则信号',
+  llm_enriched: 'AI 解读',
+  bullish_signal: '多头信号',
+  bearish_signal: '空头信号',
+  reversal_candidate: '反转候选',
+  continuation_signal: '延续信号',
+  term_structure: '期限结构'
+};
+const BENCHMARK_CARD_TITLE_MAP = {
+  'WTI Crude Oil': 'WTI 原油',
+  'SC Shanghai Crude': 'SC 上海原油'
+};
+const CARD_SUBTITLE_MAP = {
+  'CME / NYMEX · Near Month': 'CME/NYMEX · 近月',
+  'INE · Near Month': 'INE·近月'
+};
+const SECTION_TITLE_MAP = {
+  'Global Benchmark Cards': '全球基准行情',
+  'Spread & Curve Structure': '期限结构分析'
+};
+const PAGE_META_MAP = {
+  'Global Oil Dashboard': '原油市场仪表盘',
+  'WTI · SC · Brent Reference': 'WTI · SC · 布伦特参考'
+};
+const ZONE_TYPE_MAP = {
+  'support': '支撑区域',
+  'resistance': '阻力区域',
+  'curve_shape': '曲线形态'
+};
+const GLOBAL_BIAS_LABEL_MAP = {
+  'bullish': '看涨',
+  'bearish': '看跌',
+  'neutral': '中性'
+};
+const STATUS_BADGE_LABEL_MAP = {
+  'LIVE': '实时',
+  'DEGRADED': '降级',
+  'NOMINAL': '正常',
+  'PENDING_PHASE_U': '待定'
+};
+const MARKET_TONE_COLOR_MAP = {
+  '偏强': {
+    color: 'var(--accent-bullish)',
+    bg: 'rgba(14,203,129,0.12)'
+  },
+  '中性偏强': {
+    color: 'var(--accent-bullish)',
+    bg: 'rgba(14,203,129,0.08)'
+  },
+  '中性': {
+    color: 'var(--accent-silver)',
+    bg: 'rgba(155,168,182,0.08)'
+  },
+  '中性偏弱': {
+    color: 'var(--accent-degraded)',
+    bg: 'rgba(240,185,11,0.08)'
+  },
+  '偏弱': {
+    color: 'var(--accent-bearish)',
+    bg: 'rgba(246,70,93,0.08)'
+  },
+  '分化': {
+    color: 'var(--accent-degraded)',
+    bg: 'rgba(240,185,11,0.08)'
+  },
+  '方向不明': {
+    color: 'var(--text-secondary)',
+    bg: 'rgba(132,138,160,0.08)'
+  }
+};
+
+// ─── EventRiskDirectionBadge ───────────────────────────────────────────────
+const EventRiskDirectionBadge = ({
+  direction
+}) => {
+  const configs = {
+    'bullish_oil': {
+      label: '偏利多原油',
+      bg: 'rgba(14,203,129,0.12)',
+      border: 'rgba(14,203,129,0.28)',
+      color: '#0ecb81'
+    },
+    'bearish_oil': {
+      label: '偏利空原油',
+      bg: 'rgba(246,70,93,0.12)',
+      border: 'rgba(246,70,93,0.28)',
+      color: '#f6465d'
+    },
+    'mixed': {
+      label: '影响混合',
+      bg: 'rgba(252,213,53,0.12)',
+      border: 'rgba(252,213,53,0.28)',
+      color: '#FCD535'
+    }
+  };
+  if (direction === 'unclear') return null;
+  const c = configs[direction] || configs['unclear'];
+  return /*#__PURE__*/React.createElement("span", {
+    style: {
+      background: c.bg,
+      border: `1px solid ${c.border}`,
+      borderRadius: 20,
+      padding: '4px 12px',
+      fontSize: 12,
+      color: c.color,
+      fontWeight: 600
+    }
+  }, c.label);
+};
+
+// ─── EventRiskCard ──────────────────────────────────────────────────────────
+const EventRiskCard = ({
+  risk,
+  compact
+}) => {
+  const sources = risk.sources || [];
+  const [expanded, setExpanded] = useState(false);
+  const isCompact = compact === true;
+  const showSignals = !isCompact || expanded;
+  return /*#__PURE__*/React.createElement("div", {
+    style: {
+      background: 'var(--bg-card)',
+      border: '1px solid var(--border)',
+      borderRadius: 12,
+      padding: isCompact ? 12 : 18,
+      marginBottom: isCompact ? 8 : 12,
+      color: 'var(--text-primary)',
+      minHeight: isCompact ? 120 : undefined,
+      display: 'flex',
+      flexDirection: 'column',
+      gap: isCompact ? 8 : 0
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'flex-start',
+      marginBottom: isCompact ? 0 : 12
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      flex: 1,
+      minWidth: 0
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: isCompact ? 12 : 14,
+      fontWeight: 600,
+      color: 'var(--text-primary)',
+      marginBottom: 3,
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
+      whiteSpace: 'nowrap'
+    }
+  }, risk.risk_title), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 10,
+      color: 'var(--text-secondary)',
+      marginTop: 2
+    }
+  }, risk.last_seen_at ? (() => {
+    const parts = risk.last_seen_at.match(/(\d+)\s+(\w+)\s+(\d+)/);
+    if (parts) {
+      const day = parseInt(parts[1]);
+      const monStr = parts[2];
+      const year = parts[3];
+      const monMap = {
+        'Jan': '01',
+        'Feb': '02',
+        'Mar': '03',
+        'Apr': '04',
+        'May': '05',
+        'Jun': '06',
+        'Jul': '07',
+        'Aug': '08',
+        'Sep': '09',
+        'Oct': '10',
+        'Nov': '11',
+        'Dec': '12'
+      };
+      const mon = monMap[monStr] || monStr;
+      return `发布：${year}-${mon}-${String(day).padStart(2, '0')}`;
+    }
+    return `发布：${risk.last_seen_at.substring(0, 10)}`;
+  })() : '')), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: 'flex',
+      gap: 4,
+      alignItems: 'center',
+      flexShrink: 0,
+      marginLeft: 8
+    }
+  }, risk.display_mode === 'deterministic' && /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 9,
+      background: 'var(--bg-chip)',
+      color: 'var(--text-secondary)',
+      padding: '2px 5px',
+      borderRadius: 6
+    }
+  }, "\u89C4\u5219"))), (risk.why_it_matters || risk.impact_explanation) && /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: isCompact ? 11 : 13,
+      color: 'var(--text-secondary)',
+      lineHeight: 1.5,
+      marginBottom: isCompact ? 0 : 14,
+      ...(isCompact ? {
+        overflow: 'hidden',
+        display: '-webkit-box',
+        WebkitLineClamp: 2,
+        WebkitBoxOrient: 'vertical'
+      } : {})
+    }
+  }, risk.why_it_matters || risk.impact_explanation), !isCompact && /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: 'grid',
+      gridTemplateColumns: '1fr 1fr',
+      gap: 10,
+      marginBottom: 12
+    }
+  }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 10,
+      textTransform: 'uppercase',
+      color: 'var(--text-secondary)',
+      marginBottom: 4,
+      letterSpacing: '0.5px'
+    }
+  }, "\u5F71\u54CD\u8F74"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12,
+      color: 'var(--text-primary)'
+    }
+  }, risk.impact_axis ? risk.impact_axis.join(' · ') : '')), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 10,
+      textTransform: 'uppercase',
+      color: 'var(--text-secondary)',
+      marginBottom: 4,
+      letterSpacing: '0.5px'
+    }
+  }, "\u76F8\u5173\u5E02\u573A"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12,
+      color: 'var(--text-primary)'
+    }
+  }, risk.affected_markets ? risk.affected_markets.join(' · ') : ''))), isCompact && risk.impact_axis && risk.affected_markets && /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: 'flex',
+      gap: 4,
+      flexWrap: 'wrap',
+      marginBottom: 0
+    }
+  }, risk.impact_axis.slice(0, 2).map(ax => /*#__PURE__*/React.createElement("span", {
+    key: ax,
+    style: {
+      fontSize: 9,
+      background: 'var(--bg-chip)',
+      color: 'var(--text-secondary)',
+      padding: '1px 6px',
+      borderRadius: 6
+    }
+  }, ax)), /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 9,
+      color: 'var(--text-secondary)',
+      padding: '1px 4px'
+    }
+  }, "\xB7"), risk.affected_markets.slice(0, 2).map(m => /*#__PURE__*/React.createElement("span", {
+    key: m,
+    style: {
+      fontSize: 9,
+      background: 'var(--bg-chip-alt)',
+      color: 'var(--text-secondary)',
+      padding: '1px 6px',
+      borderRadius: 6
+    }
+  }, m))), showSignals && risk.confirmation_signals && risk.confirmation_signals.length > 0 && /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: 'grid',
+      gridTemplateColumns: '1fr 1fr',
+      gap: 10,
+      marginBottom: 14
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      background: 'var(--bg-confirm)',
+      border: '1px solid var(--border-confirm)',
+      borderRadius: 8,
+      padding: 10
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 10,
+      color: 'var(--text-confirm)',
+      marginBottom: 4
+    }
+  }, "\u2713 \u786E\u8BA4\u4FE1\u53F7"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 11,
+      color: 'var(--text-primary)',
+      lineHeight: 1.4
+    }
+  }, risk.confirmation_signals[0])), /*#__PURE__*/React.createElement("div", {
+    style: {
+      background: 'var(--bg-invalidate)',
+      border: '1px solid var(--border-invalidate)',
+      borderRadius: 8,
+      padding: 10
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 10,
+      color: 'var(--text-invalidate)',
+      marginBottom: 4
+    }
+  }, "\u2717 \u5931\u6548\u6761\u4EF6"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 11,
+      color: 'var(--text-primary)',
+      lineHeight: 1.4
+    }
+  }, risk.invalidation_signals && risk.invalidation_signals[0] ? risk.invalidation_signals[0] : '—'))), isCompact && /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'center'
+    }
+  }, sources.length > 0 && /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: 'flex',
+      gap: 4,
+      alignItems: 'center',
+      flexWrap: 'wrap'
+    }
+  }, sources.slice(0, 2).map((s, i) => /*#__PURE__*/React.createElement("span", {
+    key: i,
+    style: {
+      background: 'var(--bg-chip)',
+      fontSize: 10,
+      color: 'var(--text-secondary)',
+      padding: '2px 7px',
+      borderRadius: 10
+    }
+  }, s.source_name)), sources.length > 2 && /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 10,
+      color: 'var(--text-secondary)'
+    }
+  }, "+", sources.length - 2)), (risk.confirmation_signals || risk.invalidation_signals || risk.source_caveat) && /*#__PURE__*/React.createElement("button", {
+    onClick: () => setExpanded(!expanded),
+    style: {
+      background: 'none',
+      border: 'none',
+      color: 'var(--accent-live)',
+      fontSize: 10,
+      cursor: 'pointer',
+      padding: '2px 6px',
+      marginLeft: 'auto'
+    }
+  }, expanded ? '收起' : '展开')), !isCompact && sources.length > 0 && /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: 'flex',
+      gap: 8,
+      alignItems: 'center'
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 10,
+      color: 'var(--text-secondary)',
+      marginRight: 4
+    }
+  }, "\u6765\u6E90:"), sources.map((s, i) => /*#__PURE__*/React.createElement("span", {
+    key: i,
+    style: {
+      background: 'var(--bg-chip)',
+      fontSize: 11,
+      color: 'var(--text-secondary)',
+      padding: '3px 10px',
+      borderRadius: 12,
+      fontWeight: 500
+    }
+  }, s.source_name))), expanded && risk.source_caveat && /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 10,
+      color: 'var(--text-secondary)',
+      borderTop: '1px solid var(--border)',
+      paddingTop: 8,
+      marginTop: 4,
+      lineHeight: 1.5
+    }
+  }, "\u26A0 ", risk.source_caveat));
+};
+
+// ─── EventRiskMonitor ───────────────────────────────────────────────────────
+const EventRiskMonitor = ({
+  data,
+  compact
+}) => {
+  const isCompact = compact === true;
+  if (!data || data.status === 'error') {
+    return null;
+  }
+  const allVisibleRisks = data.risks.filter(r => r.risk_direction !== 'unclear');
+  const displayRisks = isCompact ? allVisibleRisks.slice(0, 3) : allVisibleRisks;
+  if (data.status === 'empty' || !data.risks || data.risks.length === 0 || allVisibleRisks.length === 0) {
+    return /*#__PURE__*/React.createElement("div", {
+      style: {
+        background: 'var(--bg-card)',
+        border: '1px solid var(--border)',
+        borderRadius: 12,
+        padding: isCompact ? 16 : 24,
+        textAlign: 'center',
+        color: 'var(--text-secondary)',
+        fontSize: 13,
+        height: '100%',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
+      }
+    }, "\u6682\u65E0\u9AD8\u7F6E\u4FE1\u4E8B\u4EF6\u98CE\u9669");
+  }
+  return /*#__PURE__*/React.createElement("div", {
+    style: {
+      margin: 0,
+      padding: isCompact ? '12px 14px' : '0',
+      height: '100%',
+      display: 'flex',
+      flexDirection: 'column'
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      marginBottom: isCompact ? 6 : 10
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: 'flex',
+      alignItems: 'center',
+      gap: 6
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: isCompact ? 10 : 13,
+      fontWeight: 600,
+      color: 'var(--text-primary)'
+    }
+  }, "\uD83D\uDCE1 ", isCompact ? '事件风险' : '今日事件风险监控'), data.status === 'degraded' && /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 9,
+      color: 'var(--text-secondary)',
+      background: 'var(--bg-chip-alt)',
+      padding: '2px 6px',
+      borderRadius: 6
+    }
+  }, "LLM\u964D\u7EA7")), !isCompact && /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 11,
+      color: 'var(--text-secondary)',
+      marginTop: 3
+    }
+  }, "\u8BC6\u522B ", data.cluster_count, " \u4E2A\u4E8B\u4EF6\u7C07 \xB7 \u5C55\u793A ", displayRisks.length, " \u4E2A\u98CE\u9669", data.llm_explanation_count > 0 && /*#__PURE__*/React.createElement("span", null, " \xB7 ", data.llm_explanation_count, " \u6761 LLM \u89E3\u91CA")), isCompact && /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 10,
+      color: 'var(--text-secondary)',
+      marginTop: 2
+    }
+  }, data.cluster_count, " \u4E8B\u4EF6\u7C07 \xB7 ", displayRisks.length, " \u6761\u98CE\u9669")), /*#__PURE__*/React.createElement("div", {
+    style: {
+      flex: 1,
+      overflow: 'auto'
+    }
+  }, displayRisks.map((risk, i) => /*#__PURE__*/React.createElement(EventRiskCard, {
+    key: risk.cluster_id || i,
+    risk: risk,
+    compact: isCompact
+  }))));
+};
+
+// ─── MarketBriefSection ──────────────────────────────────────────────────
+function MarketBriefSection({
+  market_brief,
+  compact
+}) {
+  if (!market_brief) {
+    return /*#__PURE__*/React.createElement("div", {
+      style: {
+        margin: '16px 24px 0',
+        padding: '16px 20px',
+        background: 'var(--bg-card)',
+        border: '1px solid var(--border)',
+        borderRadius: 8
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 11,
+        color: 'var(--text-secondary)',
+        textTransform: 'uppercase',
+        letterSpacing: '0.1em',
+        marginBottom: 8
+      }
+    }, "\u4ECA\u65E5\u6CB9\u5E02\u7B80\u62A5"), /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 13,
+        color: 'var(--text-secondary)'
+      }
+    }, "\u4ECA\u65E5\u6CB9\u5E02\u7B80\u62A5\u6682\u4E0D\u53EF\u7528"));
+  }
+  const status = market_brief.status;
+  if (status !== 'ok') {
+    const msg = market_brief.message || '今日油市简报暂不可用';
+    return /*#__PURE__*/React.createElement("div", {
+      style: {
+        margin: '16px 24px 0',
+        padding: '16px 20px',
+        background: 'var(--bg-card)',
+        border: '1px solid var(--border)',
+        borderRadius: 8
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 11,
+        color: 'var(--text-secondary)',
+        textTransform: 'uppercase',
+        letterSpacing: '0.1em',
+        marginBottom: 8
+      }
+    }, "\u4ECA\u65E5\u6CB9\u5E02\u7B80\u62A5"), /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 13,
+        color: 'var(--accent-degraded)'
+      }
+    }, msg));
+  }
+  const toneLabel = market_brief.market_tone_label || '方向不明';
+  const toneColors = MARKET_TONE_COLOR_MAP[toneLabel] || MARKET_TONE_COLOR_MAP['方向不明'];
+  const watchItems = Array.isArray(market_brief.key_watch_items) ? market_brief.key_watch_items : [];
+  const riskNotes = []; // 风险提示板块已隐藏
+  const genMeta = market_brief.generation_metadata || {};
+  const genAt = genMeta.generated_at ? (() => {
+    const d = new Date(genMeta.generated_at);
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${m}月${day}日`;
+  })() : null;
+  return /*#__PURE__*/React.createElement("div", {
+    style: {
+      margin: 0,
+      padding: compact ? '14px 16px' : '18px 22px',
+      background: 'var(--bg-card)',
+      border: '1px solid var(--border)',
+      borderRadius: 8,
+      height: '100%',
+      display: 'flex',
+      flexDirection: 'column'
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: 'flex',
+      alignItems: 'flex-start',
+      gap: 12,
+      marginBottom: compact ? 8 : 14
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      flex: 1
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: 'flex',
+      alignItems: 'center',
+      gap: 10,
+      marginBottom: compact ? 4 : 6
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: compact ? 10 : 11,
+      fontFamily: "'IBM Plex Mono', monospace",
+      fontWeight: 600,
+      textTransform: 'uppercase',
+      letterSpacing: '0.08em',
+      color: 'var(--text-secondary)'
+    }
+  }, "\u4ECA\u65E5\u6CB9\u5E02\u7B80\u62A5", genAt && /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 9,
+      color: 'var(--text-secondary)',
+      fontWeight: 400,
+      marginLeft: 6
+    }
+  }, genAt)), /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: compact ? 10 : 11,
+      fontWeight: 600,
+      padding: '3px 10px',
+      borderRadius: 4,
+      background: toneColors.bg,
+      color: toneColors.color,
+      border: `1px solid ${toneColors.color}`,
+      fontFamily: "'IBM Plex Mono', monospace"
+    }
+  }, toneLabel)), !compact && /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 15,
+      fontWeight: 600,
+      lineHeight: 1.4,
+      color: 'var(--text-primary)',
+      fontFamily: "'IBM Plex Mono', monospace"
+    }
+  }, market_brief.headline || ''), compact && /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12,
+      fontWeight: 600,
+      lineHeight: 1.4,
+      color: 'var(--text-primary)',
+      fontFamily: "'IBM Plex Mono', monospace"
+    }
+  }, market_brief.headline || ''))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: compact ? 12 : 13,
+      lineHeight: compact ? 1.4 : 1.6,
+      color: 'var(--text-secondary)',
+      marginBottom: compact ? 8 : 14,
+      ...(compact ? {
+        WebkitLineClamp: 2,
+        WebkitBoxOrient: 'vertical',
+        overflow: 'hidden',
+        display: '-webkit-box'
+      } : {})
+    }
+  }, market_brief.summary || ''), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: 'grid',
+      gridTemplateColumns: 'repeat(3, 1fr)',
+      gap: compact ? 8 : 12,
+      marginBottom: compact ? 8 : 14,
+      padding: compact ? '8px 10px' : '12px 14px',
+      background: 'var(--bg-page)',
+      borderRadius: 6,
+      border: '1px solid var(--border)'
+    }
+  }, [{
+    label: 'WTI',
+    read: market_brief.wti_read
+  }, {
+    label: 'SC',
+    read: market_brief.sc_read
+  }, {
+    label: '期限结构',
+    read: market_brief.term_structure_read
+  }].map(item => /*#__PURE__*/React.createElement("div", {
+    key: item.label
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: compact ? 9 : 10,
+      color: 'var(--text-secondary)',
+      textTransform: 'uppercase',
+      letterSpacing: '0.08em',
+      marginBottom: 2
+    }
+  }, item.label), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: compact ? 11 : 12,
+      color: 'var(--text-primary)',
+      lineHeight: 1.4
+    }
+  }, item.read || '—')))), watchItems.length > 0 && !compact && /*#__PURE__*/React.createElement("div", {
+    style: {
+      marginBottom: 10
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 10,
+      color: 'var(--text-secondary)',
+      textTransform: 'uppercase',
+      letterSpacing: '0.08em',
+      marginBottom: 6
+    }
+  }, "\u4ECA\u65E5\u89C2\u5BDF\u91CD\u70B9"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: 'flex',
+      flexDirection: 'column',
+      gap: 4
+    }
+  }, watchItems.slice(0, 5).map((item, i) => /*#__PURE__*/React.createElement("div", {
+    key: i,
+    style: {
+      display: 'flex',
+      alignItems: 'flex-start',
+      gap: 6
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      color: 'var(--accent-live)',
+      fontSize: 11,
+      marginTop: 1
+    }
+  }, "\u2192"), /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 12,
+      color: 'var(--text-primary)',
+      lineHeight: 1.4
+    }
+  }, item))))), !compact && market_brief.data_boundary_note && /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 11,
+      color: 'var(--text-secondary)',
+      borderTop: '1px solid var(--border)',
+      paddingTop: 10,
+      marginTop: 4,
+      lineHeight: 1.5
+    }
+  }, market_brief.data_boundary_note));
+}
+
+// ─── StatusBadge ────────────────────────────────────────────────────────
+function StatusBadge({
+  tag
+}) {
+  const colors = {
+    LIVE: {
+      color: 'var(--accent-gold)',
+      border: 'rgba(252,213,53,0.45)'
+    },
+    DEGRADED: {
+      color: 'var(--accent-degraded)',
+      border: 'rgba(240,185,11,0.45)'
+    },
+    NOMINAL: {
+      color: 'var(--text-muted)',
+      border: 'rgba(112,122,138,0.45)'
+    }
+  };
+  const c = colors[tag] || {
+    color: 'var(--text-secondary)',
+    border: 'var(--border)'
+  };
+  const label = tag ? STATUS_BADGE_LABEL_MAP[tag] || tag : '—';
+  return /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 10,
+      fontFamily: "'IBM Plex Mono', monospace",
+      fontWeight: 600,
+      padding: '3px 8px',
+      borderRadius: 4,
+      background: 'rgba(255,255,255,0.02)',
+      color: c.color,
+      border: `1px solid ${c.border}`,
+      letterSpacing: '0.06em'
+    }
+  }, label);
+}
+
+// ─── ScenarioAnalysisSection ─────────────────────────────────────────────
+function ScenarioAnalysisSection({
+  scenario_analysis
+}) {
+  if (!scenario_analysis) {
+    return /*#__PURE__*/React.createElement("div", {
+      style: {
+        margin: '16px 24px 0',
+        padding: '14px 20px',
+        background: 'var(--bg-card)',
+        border: '1px solid var(--border)',
+        borderLeft: '3px solid var(--accent-degraded)',
+        borderRadius: 8
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 11,
+        color: 'var(--text-secondary)',
+        textTransform: 'uppercase',
+        letterSpacing: '0.1em',
+        marginBottom: 8
+      }
+    }, "\u4E09\u60C5\u666F\u63A8\u6F14"), /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 13,
+        color: 'var(--text-secondary)'
+      }
+    }, "\u4E09\u60C5\u666F\u63A8\u6F14\u6682\u4E0D\u53EF\u7528\uFF1A\u6570\u636E\u52A0\u8F7D\u4E2D"));
+  }
+  const status = scenario_analysis.status;
+  if (status !== 'ok') {
+    const msg = scenario_analysis.message || '三情景推演暂不可用';
+    return /*#__PURE__*/React.createElement("div", {
+      style: {
+        margin: '16px 24px 0',
+        padding: '14px 20px',
+        background: 'rgba(248,81,73,0.05)',
+        border: '1px solid rgba(248,81,73,0.3)',
+        borderLeft: '3px solid var(--accent-bearish)',
+        borderRadius: 8
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 11,
+        color: 'var(--text-secondary)',
+        textTransform: 'uppercase',
+        letterSpacing: '0.1em',
+        marginBottom: 8
+      }
+    }, "\u4E09\u60C5\u666F\u63A8\u6F14"), /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 13,
+        color: 'var(--accent-bearish)'
+      }
+    }, msg));
+  }
+  const {
+    base_case_label,
+    summary,
+    scenarios,
+    key_cross_market_watch,
+    data_boundary_note
+  } = scenario_analysis;
+  const scenarioKeys = ['bullish', 'neutral', 'bearish'];
+  const scenarioColors = {
+    bullish: {
+      border: 'var(--accent-bullish)',
+      bg: 'rgba(14,203,129,0.06)',
+      label: '#0ecb81',
+      topLine: '#0ecb81'
+    },
+    neutral: {
+      border: 'var(--accent-silver)',
+      bg: 'rgba(155,168,182,0.06)',
+      label: '#9ba8b6',
+      topLine: '#9ba8b6'
+    },
+    bearish: {
+      border: 'var(--accent-bearish)',
+      bg: 'rgba(246,70,93,0.06)',
+      label: '#f6465d',
+      topLine: '#f6465d'
+    }
+  };
+  return /*#__PURE__*/React.createElement("div", {
+    style: {
+      margin: '16px 24px 0',
+      padding: '14px 20px',
+      background: 'var(--bg-card)',
+      border: '1px solid var(--border)',
+      borderRadius: 8
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: 'flex',
+      alignItems: 'center',
+      gap: 10,
+      marginBottom: 12
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12,
+      fontWeight: 700,
+      color: 'var(--text-primary)'
+    }
+  }, "\u4E09\u60C5\u666F\u63A8\u6F14"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 11,
+      padding: '2px 8px',
+      borderRadius: 10,
+      background: 'var(--accent-warm-bg)',
+      color: 'var(--accent-warm)'
+    }
+  }, "\u57FA\u51C6\u60C5\u666F\uFF1A", base_case_label)), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12,
+      color: 'var(--text-secondary)',
+      marginBottom: 14,
+      lineHeight: 1.5
+    }
+  }, summary), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: 'grid',
+      gridTemplateColumns: '1fr 1fr 1fr',
+      gap: 10,
+      marginBottom: 12
+    }
+  }, scenarioKeys.map(key => {
+    const sc = scenarios[key];
+    const colors = scenarioColors[key];
+    return /*#__PURE__*/React.createElement("div", {
+      key: key,
+      style: {
+        border: '1px solid var(--border)',
+        borderTop: `3px solid ${colors.label}`,
+        borderRadius: 6,
+        padding: '10px 12px',
+        background: colors.bg
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 10,
+        fontWeight: 600,
+        textTransform: 'uppercase',
+        letterSpacing: '0.05em',
+        color: colors.label,
+        marginBottom: 4
+      }
+    }, key.toUpperCase()), /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 13,
+        fontWeight: 600,
+        color: 'var(--text-primary)',
+        marginBottom: 2
+      }
+    }, sc.title), /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 10,
+        color: 'var(--text-secondary)',
+        marginBottom: 6
+      }
+    }, sc.probability_label), /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 11,
+        color: 'var(--text-secondary)',
+        marginBottom: 8,
+        lineHeight: 1.4
+      }
+    }, sc.summary), /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 10,
+        color: 'var(--text-secondary)',
+        fontWeight: 600,
+        marginBottom: 2
+      }
+    }, "\u6210\u7ACB\u6761\u4EF6"), /*#__PURE__*/React.createElement("ul", {
+      style: {
+        fontSize: 10,
+        color: 'var(--text-secondary)',
+        paddingLeft: 14,
+        marginBottom: 6
+      }
+    }, (sc.conditions || []).map((c, i) => /*#__PURE__*/React.createElement("li", {
+      key: i,
+      style: {
+        marginBottom: 2
+      }
+    }, c))), /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 10,
+        color: 'var(--text-secondary)',
+        fontWeight: 600,
+        marginBottom: 2
+      }
+    }, "\u9A8C\u8BC1\u4FE1\u53F7"), /*#__PURE__*/React.createElement("ul", {
+      style: {
+        fontSize: 10,
+        color: 'var(--text-secondary)',
+        paddingLeft: 14,
+        marginBottom: 6
+      }
+    }, (sc.validation_signals || []).map((s, i) => /*#__PURE__*/React.createElement("li", {
+      key: i,
+      style: {
+        marginBottom: 2
+      }
+    }, s))), /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 10,
+        color: 'var(--text-secondary)',
+        fontWeight: 600,
+        marginBottom: 2
+      }
+    }, "\u5931\u6548\u4FE1\u53F7"), /*#__PURE__*/React.createElement("ul", {
+      style: {
+        fontSize: 10,
+        color: 'var(--text-secondary)',
+        paddingLeft: 14
+      }
+    }, (sc.invalidation_signals || []).map((s, i) => /*#__PURE__*/React.createElement("li", {
+      key: i,
+      style: {
+        marginBottom: 2
+      }
+    }, s))));
+  })), key_cross_market_watch && key_cross_market_watch.length > 0 && /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 11,
+      color: 'var(--text-secondary)',
+      background: 'var(--bg-card)',
+      borderRadius: 4,
+      padding: '8px 10px',
+      marginBottom: 10
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 10,
+      fontWeight: 600,
+      color: 'var(--accent-warm)',
+      marginBottom: 4,
+      textTransform: 'uppercase',
+      letterSpacing: '0.05em'
+    }
+  }, "\u8DE8\u5E02\u573A\u89C2\u5BDF\u91CD\u70B9"), key_cross_market_watch.join(' · ')), data_boundary_note && /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 10,
+      color: 'var(--text-secondary)',
+      fontStyle: 'italic',
+      borderTop: '1px solid var(--border)',
+      paddingTop: 8
+    }
+  }, data_boundary_note));
+}
+
+// ─── OverviewStrip ───────────────────────────────────────────────────────
+function OverviewStrip({
+  strip,
+  eventRisk
+}) {
+  const baseItems = [{
+    key: 'global_bias',
+    ...strip.global_bias
+  }, {
+    key: 'leading_benchmark',
+    ...strip.leading_benchmark
+  }, {
+    key: 'curve_state',
+    ...strip.curve_state
+  }];
+  const eventRiskItem = (() => {
+    if (!eventRisk || !eventRisk.risks || eventRisk.risks.length === 0) {
+      return {
+        key: 'event_risk',
+        label: '事件风险',
+        value: '暂无事件'
+      };
+    }
+    const riskCount = eventRisk.risks.length;
+    const status = eventRisk.status || 'ok';
+    const statusLabel = status === 'ok' ? '正常' : status === 'degraded' ? 'LLM降级' : '空';
+    const directions = eventRisk.risks.map(r => r.risk_direction).filter(Boolean);
+    const hasBullish = directions.includes('bullish_oil');
+    const hasBearish = directions.includes('bearish_oil');
+    const directionLabel = hasBullish && !hasBearish ? '偏利多' : hasBearish && !hasBullish ? '偏利空' : hasBullish && hasBearish ? '多空交织' : '方向不明';
+    return {
+      key: 'event_risk',
+      label: '事件风险',
+      value: `${riskCount} 条 · ${statusLabel}`,
+      sub: directionLabel
+    };
+  })();
+  const items = [...baseItems, eventRiskItem];
+  return /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: 'grid',
+      gridTemplateColumns: 'repeat(4, 1fr)',
+      gap: 12,
+      padding: '16px 24px',
+      background: 'var(--bg-card)',
+      borderBottom: '1px solid var(--border)'
+    }
+  }, items.map(item => {
+    let displayValue = item.value || '—';
+    if (item.key === 'global_bias') displayValue = GLOBAL_BIAS_LABEL_MAP[item.value] || item.value || '—';
+    if (item.key === 'curve_state') displayValue = CURVE_STATE_MAP[item.value] || item.value || '—';
+    return /*#__PURE__*/React.createElement("div", {
+      key: item.key,
+      style: {
+        padding: '10px 14px',
+        background: 'var(--bg-page)',
+        borderRadius: 6,
+        border: '1px solid var(--border)'
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 9,
+        color: 'var(--text-secondary)',
+        textTransform: 'uppercase',
+        letterSpacing: '0.1em',
+        marginBottom: 5
+      }
+    }, item.label), /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 14,
+        fontFamily: "'IBM Plex Mono', monospace",
+        fontWeight: 600,
+        color: 'var(--accent-neutral)',
+        whiteSpace: 'nowrap',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis'
+      }
+    }, displayValue), item.sub && /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 11,
+        color: 'var(--text-secondary)',
+        marginTop: 3
+      }
+    }, item.sub));
+  }));
+}
+
+// ─── MethodologyStrip ─────────────────────────────────────────────────────
+function MethodologyStrip({
+  meta
+}) {
+  return /*#__PURE__*/React.createElement("div", {
+    style: {
+      padding: '14px 24px',
+      borderTop: '1px solid var(--border)',
+      background: 'var(--bg-card)',
+      marginTop: 8
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 9,
+      color: 'var(--text-secondary)',
+      textTransform: 'uppercase',
+      letterSpacing: '0.1em',
+      marginBottom: 5
+    }
+  }, meta.title), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12,
+      color: 'var(--text-secondary)',
+      lineHeight: 1.6
+    }
+  }, meta.text));
+}
+
+// ─── MethodologyDetailSection (expandable) ───────────────────────────────
+function MethodologyDetailSection() {
+  const [expanded, setExpanded] = useState(false);
+  const methodologyText = /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12,
+      color: 'var(--text-secondary)',
+      lineHeight: 1.8,
+      paddingTop: 2
+    }
+  }, /*#__PURE__*/React.createElement("p", {
+    style: {
+      marginBottom: 10
+    }
+  }, "\u672C\u4EEA\u8868\u76D8\u4EE5 WTI \u539F\u6CB9\u3001\u4E0A\u6D77\u539F\u6CB9 SC \u53CA SC \u671F\u9650\u7ED3\u6784\u4E3A\u6838\u5FC3\u89C2\u5BDF\u5BF9\u8C61\uFF0C\u7ED3\u5408\u65E5\u7EBF\u8721\u70DB\u56FE\u3001\u8FD1\u6708\u5408\u7EA6\u4EF7\u683C\u884C\u4E3A\u3001\u671F\u9650\u7ED3\u6784\u53D8\u5316\u4E0E\u4E8B\u4EF6\u98CE\u9669\u4FE1\u606F\uFF0C\u751F\u6210\u9762\u5411\u77ED\u671F\u5E02\u573A\u5224\u65AD\u7684\u6CB9\u5E02\u7B80\u62A5\u3002"), /*#__PURE__*/React.createElement("p", {
+    style: {
+      marginBottom: 10
+    }
+  }, "\u8721\u70DB\u56FE\u90E8\u5206\u501F\u9274\u300A\u65E5\u672C\u8721\u70DB\u56FE\u6280\u672F\u300B\u4E2D\u7684\u7ECF\u5178\u5206\u6790\u6846\u67B6\uFF0C\u4E0D\u5C06\u5355\u4E00\u5F62\u6001\u89C6\u4E3A\u76F4\u63A5\u4E70\u5356\u4FE1\u53F7\uFF0C\u800C\u662F\u7EFC\u5408\u89C2\u5BDF\u5B9E\u4F53\u957F\u5EA6\u3001\u4E0A\u4E0B\u5F71\u7EBF\u3001\u524D\u5E8F\u8D8B\u52BF\u3001\u6240\u5904\u533A\u95F4\u4F4D\u7F6E\u3001\u652F\u6491\u963B\u529B\u4EE5\u53CA\u540E\u7EED\u786E\u8BA4\u6761\u4EF6\u3002\u5F53\u524D\u65E5\u7EBF\u5206\u6790\u7A97\u53E3\u91C7\u7528\u5206\u5C42\u53E3\u5F84\uFF1A\u6700\u8FD1 5 \u6839 K \u7EBF\u7528\u4E8E\u8BC6\u522B\u5C40\u90E8\u5F62\u6001\uFF0C\u6700\u8FD1 10 \u6839 K \u7EBF\u7528\u4E8E\u5224\u65AD\u77ED\u671F\u8D8B\u52BF\uFF0C\u6700\u8FD1 30 \u6839 K \u7EBF\u7528\u4E8E\u5224\u65AD\u4EF7\u683C\u533A\u95F4\u4F4D\u7F6E\uFF0C\u6700\u8FD1 60 \u6839 K \u7EBF\u7528\u4E8E\u8F85\u52A9\u8BC6\u522B\u5173\u952E\u652F\u6491\u4E0E\u963B\u529B\u3002"), /*#__PURE__*/React.createElement("p", {
+    style: {
+      marginBottom: 10
+    }
+  }, "LLM \u5206\u6790\u5E76\u4E0D\u76F4\u63A5\u4ECE\u7A7A\u767D\u5E02\u573A\u4E2D\"\u9884\u6D4B\u4EF7\u683C\"\uFF0C\u800C\u662F\u5728\u7CFB\u7EDF\u5DF2\u6784\u5EFA\u7684 Market Facts\u3001\u8721\u70DB\u56FE\u5019\u9009\u5F62\u6001\u3001\u671F\u9650\u7ED3\u6784\u6570\u636E\u548C\u4E8B\u4EF6\u98CE\u9669\u6458\u8981\u57FA\u7840\u4E0A\u8FDB\u884C\u89E3\u91CA\u3001\u5F52\u7EB3\u4E0E\u60C5\u666F\u63A8\u6F14\u3002\u7CFB\u7EDF\u8981\u6C42 LLM \u53EA\u4F7F\u7528\u5DF2\u63D0\u4F9B\u7684\u6570\u636E\uFF0C\u4E0D\u5F97\u81EA\u884C\u8865\u5145\u6210\u4EA4\u91CF\u3001\u5E93\u5B58\u3001\u5B8F\u89C2\u3001\u5730\u7F18\u653F\u6CBB\u6216\u65B0\u95FB\u4FE1\u606F\u3002"), /*#__PURE__*/React.createElement("p", {
+    style: {
+      marginBottom: 10
+    }
+  }, "\u4E8B\u4EF6\u98CE\u9669\u6A21\u5757\u57FA\u4E8E\u516C\u5F00\u6765\u6E90\u4FE1\u606F\u8FDB\u884C\u6293\u53D6\u3001\u53BB\u91CD\u3001\u805A\u7C7B\u548C\u5F71\u54CD\u8DEF\u5F84\u5206\u6790\uFF0C\u91CD\u70B9\u89C2\u5BDF\u5176\u53EF\u80FD\u901A\u8FC7\u4F9B\u5E94\u3001\u9700\u6C42\u3001\u5E93\u5B58\u3001\u8FD0\u8F93\u3001\u671F\u9650\u7ED3\u6784\u6216\u5E02\u573A\u60C5\u7EEA\u5F71\u54CD\u6CB9\u4EF7\u3002\u82E5\u6765\u6E90\u4E0D\u8DB3\u3001\u5F71\u54CD\u65B9\u5411\u4E0D\u660E\u786E\u6216\u6570\u636E\u94FE\u8DEF\u4E0D\u53EF\u9A8C\u8BC1\uFF0C\u7CFB\u7EDF\u4F1A\u4FDD\u7559\"\u4E0D\u660E\"\"\u5F85\u786E\u8BA4\"\u6216\"\u6B63\u5E38\"\u7B49\u4F4E\u786E\u5B9A\u6027\u8868\u8FF0\uFF0C\u800C\u4E0D\u4F1A\u5F3A\u884C\u7ED9\u51FA\u65B9\u5411\u6027\u7ED3\u8BBA\u3002"), /*#__PURE__*/React.createElement("p", null, "\u672C\u4EEA\u8868\u76D8\u4EC5\u7528\u4E8E\u5E02\u573A\u7814\u7A76\u3001\u4EA7\u54C1\u5C55\u793A\u4E0E\u6570\u636E\u5206\u6790\u6F14\u793A\uFF0C", /*#__PURE__*/React.createElement("strong", {
+    style: {
+      color: 'var(--text-primary)'
+    }
+  }, "\u4E0D\u6784\u6210\u4EFB\u4F55\u6295\u8D44\u5EFA\u8BAE"), "\u3002"));
+  return /*#__PURE__*/React.createElement("div", {
+    style: {
+      marginTop: 8,
+      background: 'var(--bg-card)',
+      border: '1px solid var(--border)',
+      borderRadius: 'var(--card-radius)',
+      overflow: 'hidden'
+    }
+  }, /*#__PURE__*/React.createElement("button", {
+    onClick: () => setExpanded(!expanded),
+    style: {
+      width: '100%',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      padding: '12px 16px',
+      background: 'none',
+      border: 'none',
+      borderBottom: expanded ? '1px solid var(--border)' : 'none',
+      cursor: 'pointer',
+      color: 'var(--text-secondary)',
+      fontFamily: "'IBM Plex Mono', monospace",
+      fontSize: 10,
+      fontWeight: 600,
+      letterSpacing: '0.08em',
+      textTransform: 'uppercase',
+      userSelect: 'none'
+    }
+  }, /*#__PURE__*/React.createElement("span", null, "\u25B8 \u65B9\u6CD5\u8BF4\u660E"), /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 11,
+      color: 'var(--accent-gold)',
+      fontWeight: 400
+    }
+  }, expanded ? '▲' : '▼')), expanded && /*#__PURE__*/React.createElement("div", {
+    style: {
+      padding: '14px 16px'
+    }
+  }, methodologyText));
+}
+
+// ─── MainChart (lightweight-charts candlestick) ───────────────────────────
+function MainChart({
+  seriesRef,
+  chartSeries
+}) {
+  const containerRef = useRef(null);
+  const chartRef = useRef(null);
+  useEffect(() => {
+    if (!containerRef.current) return;
+    if (chartRef.current) {
+      chartRef.current.remove();
+      chartRef.current = null;
+    }
+    if (!chartSeries || !chartSeries.data || chartSeries.data.length === 0) return;
+    const chart = LightweightCharts.createChart(containerRef.current, {
+      layout: {
+        background: {
+          color: CHART_COLORS.chartBg
+        },
+        textColor: CHART_COLORS.chartText
+      },
+      grid: {
+        vertLines: {
+          color: CHART_COLORS.grid
+        },
+        horzLines: {
+          color: CHART_COLORS.grid
+        }
+      },
+      width: containerRef.current.clientWidth,
+      height: 260,
+      rightPriceScale: {
+        borderColor: CHART_COLORS.border
+      },
+      timeScale: {
+        borderColor: CHART_COLORS.border,
+        timeVisible: true,
+        rightOffset: 3,
+        barSpacing: 8
+      }
+    });
+    chartRef.current = chart;
+    const candleSeries = chart.addCandlestickSeries({
+      upColor: CHART_COLORS.bullish,
+      downColor: CHART_COLORS.bearish,
+      borderUpColor: CHART_COLORS.bullish,
+      borderDownColor: CHART_COLORS.bearish,
+      wickUpColor: CHART_COLORS.bullish,
+      wickDownColor: CHART_COLORS.bearish
+    });
+    candleSeries.setData(chartSeries.data);
+    chart.timeScale().fitContent();
+    const handleResize = () => {
+      if (containerRef.current) chart.applyOptions({
+        width: containerRef.current.clientWidth
+      });
+    };
+    const ro = new ResizeObserver(handleResize);
+    ro.observe(containerRef.current);
+    return () => {
+      ro.disconnect();
+      if (chartRef.current) {
+        chartRef.current.remove();
+        chartRef.current = null;
+      }
+    };
+  }, [seriesRef, chartSeries]);
+  if (!chartSeries || !chartSeries.data || chartSeries.data.length === 0) {
+    return /*#__PURE__*/React.createElement("div", {
+      style: {
+        height: 260,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        color: 'var(--text-secondary)',
+        fontSize: 12
+      }
+    }, "\u6682\u65E0\u56FE\u8868\u6570\u636E");
+  }
+  return /*#__PURE__*/React.createElement("div", {
+    ref: containerRef,
+    style: {
+      width: '100%',
+      height: 260
+    }
+  });
+}
+
+// ─── SignalSummaryDisplay ──────────────────────────────────────────────────
+function SignalSummaryDisplay({
+  card
+}) {
+  // Priority: LLM v2 (real) > dry_run > PE fallback > placeholder
+  const llm = card.llm_analysis;
+  const signal = card.signal_summary;
+  const isRealLLM = llm && llm.llm_status === 'ok' && llm.provider && llm.provider !== 'dry_run';
+  const isDryRun = llm && llm.provider === 'dry_run';
+  const biasColors = {
+    '偏多': 'var(--accent-bullish)',
+    '偏空': 'var(--accent-bearish)',
+    '中性观察': 'var(--text-secondary)',
+    '仅作风险提示': 'var(--text-secondary)',
+    bullish_reversal: 'var(--accent-bullish)',
+    bullish_continuation: 'var(--accent-bullish)',
+    bearish_reversal: 'var(--accent-bearish)',
+    bearish_continuation: 'var(--accent-bearish)',
+    neutral: 'var(--text-secondary)'
+  };
+
+  // Case 1: Real LLM available — show LLM v2 fields
+  if (isRealLLM) {
+    const pn = llm.pattern_name;
+    const ps = llm.pattern_status;
+    const dr = llm.directional_read;
+    return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+      style: {
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 6
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 9,
+        color: 'var(--text-secondary)',
+        textTransform: 'uppercase',
+        letterSpacing: '0.08em'
+      }
+    }, "\u5F62\u6001 / \u4FE1\u53F7"), /*#__PURE__*/React.createElement("span", {
+      style: {
+        fontSize: 9,
+        padding: '2px 6px',
+        borderRadius: 3,
+        background: 'rgba(63,185,80,0.15)',
+        color: 'var(--accent-bullish)',
+        fontFamily: "'IBM Plex Mono', monospace"
+      }
+    }, "AI")), /*#__PURE__*/React.createElement("div", {
+      style: {
+        display: 'grid',
+        gridTemplateColumns: '1fr 1fr',
+        gap: 8
+      }
+    }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 9,
+        color: 'var(--text-secondary)',
+        marginBottom: 3
+      }
+    }, "\u5F62\u6001"), /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 12,
+        fontFamily: "'IBM Plex Mono', monospace"
+      }
+    }, pn || '—')), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 9,
+        color: 'var(--text-secondary)',
+        marginBottom: 3
+      }
+    }, "\u4FE1\u53F7\u65B9\u5411"), /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 12,
+        color: biasColors[dr] || 'var(--text-secondary)',
+        fontFamily: "'IBM Plex Mono', monospace"
+      }
+    }, dr || '—')), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 9,
+        color: 'var(--text-secondary)',
+        marginBottom: 3
+      }
+    }, "\u786E\u8BA4"), /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 12,
+        color: ps === 'clear' ? 'var(--accent-bullish)' : 'var(--accent-neutral)',
+        fontFamily: "'IBM Plex Mono', monospace"
+      }
+    }, ps === 'clear' ? '已确认' : ps === 'tentative' ? '待确认' : '—')), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 9,
+        color: 'var(--text-secondary)',
+        marginBottom: 3
+      }
+    }, "\u4FE1\u5FC3"), /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 12,
+        fontFamily: "'IBM Plex Mono', monospace"
+      }
+    }, llm.confidence_level === 'high' ? '高' : llm.confidence_level === 'medium' ? '中' : llm.confidence_level === 'low' ? '低' : '—'))));
+  }
+
+  // Case 2: dry_run provider — show "模拟分析" placeholder, no PE fallback
+  if (isDryRun) {
+    return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+      style: {
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 6
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 9,
+        color: 'var(--text-secondary)',
+        textTransform: 'uppercase',
+        letterSpacing: '0.08em'
+      }
+    }, "\u5F62\u6001 / \u4FE1\u53F7"), /*#__PURE__*/React.createElement("span", {
+      style: {
+        fontSize: 9,
+        padding: '2px 6px',
+        borderRadius: 3,
+        background: 'rgba(210,153,34,0.15)',
+        color: 'var(--accent-degraded)',
+        fontFamily: "'IBM Plex Mono', monospace"
+      }
+    }, "\u6A21\u62DF")), /*#__PURE__*/React.createElement("div", {
+      style: {
+        display: 'grid',
+        gridTemplateColumns: '1fr 1fr',
+        gap: 8
+      }
+    }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 9,
+        color: 'var(--text-secondary)',
+        marginBottom: 3
+      }
+    }, "\u5F62\u6001"), /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 12,
+        fontFamily: "'IBM Plex Mono', monospace",
+        color: 'var(--text-secondary)'
+      }
+    }, "\u2014")), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 9,
+        color: 'var(--text-secondary)',
+        marginBottom: 3
+      }
+    }, "\u4FE1\u53F7\u65B9\u5411"), /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 12,
+        fontFamily: "'IBM Plex Mono', monospace",
+        color: 'var(--text-secondary)'
+      }
+    }, "\u2014")), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 9,
+        color: 'var(--text-secondary)',
+        marginBottom: 3
+      }
+    }, "\u786E\u8BA4"), /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 12,
+        fontFamily: "'IBM Plex Mono', monospace",
+        color: 'var(--text-secondary)'
+      }
+    }, "\u2014")), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 9,
+        color: 'var(--text-secondary)',
+        marginBottom: 3
+      }
+    }, "\u4FE1\u5FC3"), /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 12,
+        fontFamily: "'IBM Plex Mono', monospace",
+        color: 'var(--text-secondary)'
+      }
+    }, "\u2014"))));
+  }
+
+  // Case 3: No valid LLM — show "等待LLM分析"
+  return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 9,
+      color: 'var(--text-secondary)',
+      textTransform: 'uppercase',
+      letterSpacing: '0.08em',
+      marginBottom: 6
+    }
+  }, "\u5F62\u6001 / \u4FE1\u53F7"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 11,
+      color: 'var(--pending)',
+      fontStyle: 'italic'
+    }
+  }, "\u7B49\u5F85 LLM \u5206\u6790"));
+}
+
+// ─── RiskAnchorsDisplay ──────────────────────────────────────────────────
+function RiskAnchorsDisplay({
+  card
+}) {
+  const llm = card.llm_analysis;
+  if (!llm || !llm.summary) return null;
+  return /*#__PURE__*/React.createElement("div", {
+    style: {
+      padding: '8px 16px',
+      borderTop: '1px solid var(--border)'
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 9,
+      color: 'var(--text-secondary)',
+      marginBottom: 5,
+      textTransform: 'uppercase',
+      letterSpacing: '0.08em'
+    }
+  }, "\u5F62\u6001\u7ED3\u8BBA"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 11,
+      color: 'var(--text-primary)',
+      lineHeight: 1.5,
+      fontStyle: 'italic',
+      borderLeft: '2px solid var(--accent-neutral)',
+      paddingLeft: 6
+    }
+  }, llm.summary));
+}
+
+// ─── AnalyticsDisplay ───────────────────────────────────────────────────
+function AnalyticsDisplay({
+  analytics
+}) {
+  // Phase 1C: score block hidden per design decision.
+  // Deterministic scores are internal metrics; LLM analysis is the primary user value.
+  return null;
+}
+
+// ─── MarketContextDisplay ──────────────────────────────────────────────
+// Phase 2S: replaces "趋势/相对强度" with "市场位置"
+// Shows: 近期趋势, 区间位置, 最近支撑, 最近阻力
+function MarketContextDisplay({
+  card
+}) {
+  const mc = card.market_context;
+  if (!mc) return null;
+  return /*#__PURE__*/React.createElement("div", {
+    style: {
+      padding: '8px 16px',
+      borderTop: '1px solid var(--border)',
+      display: 'grid',
+      gridTemplateColumns: '1fr 1fr',
+      gap: 8
+    }
+  }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 9,
+      color: 'var(--text-secondary)',
+      marginBottom: 3
+    }
+  }, "\u8FD1\u671F\u8D8B\u52BF"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12,
+      color: 'var(--text-primary)',
+      fontFamily: "'IBM Plex Mono', monospace"
+    }
+  }, mc.recent_trend_fact || '—')), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 9,
+      color: 'var(--text-secondary)',
+      marginBottom: 3
+    }
+  }, "\u533A\u95F4\u4F4D\u7F6E"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12,
+      color: 'var(--text-primary)',
+      fontFamily: "'IBM Plex Mono', monospace"
+    }
+  }, mc.range_position || '—')), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 9,
+      color: 'var(--text-secondary)',
+      marginBottom: 3
+    }
+  }, "\u6700\u8FD1\u652F\u6491"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12,
+      color: 'var(--accent-bullish)',
+      fontFamily: "'IBM Plex Mono', monospace"
+    }
+  }, mc.near_support != null ? mc.near_support.toFixed(2) : '—')), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 9,
+      color: 'var(--text-secondary)',
+      marginBottom: 3
+    }
+  }, "\u6700\u8FD1\u963B\u529B"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12,
+      color: 'var(--accent-bearish)',
+      fontFamily: "'IBM Plex Mono', monospace"
+    }
+  }, mc.near_resistance != null ? mc.near_resistance.toFixed(2) : '—')));
+}
+
+// ─── LLMEnrichmentDisplay ─────────────────────────────────────────────
+// Phase 2S: structured display — summary → evidence → confirmation → risk → detail → watch
+function normalizeList(value) {
+  if (Array.isArray(value)) return value;
+  if (typeof value === 'string' && value.trim()) return [value.trim()];
+  return [];
+}
+function LLMEnrichmentDisplay({
+  card
+}) {
+  const llm = card.llm_analysis;
+  if (!llm) {
+    return /*#__PURE__*/React.createElement("div", {
+      style: {
+        padding: '8px 16px',
+        borderTop: '1px solid var(--border)',
+        background: 'rgba(88,166,255,0.03)'
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 9,
+        color: 'var(--text-secondary)',
+        textTransform: 'uppercase',
+        letterSpacing: '0.08em',
+        marginBottom: 4
+      }
+    }, "LLM \u89E3\u8BFB"), /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 11,
+        color: 'var(--pending)',
+        fontStyle: 'italic'
+      }
+    }, "\u6682\u65E0\u8721\u70DB\u56FE\u89E3\u8BFB"));
+  }
+  const isDryRun = llm.provider === 'dry_run';
+  const isRealLLM = llm.llm_status === 'ok' && !isDryRun;
+  const hasV2Structure = isRealLLM && llm.summary;
+  return /*#__PURE__*/React.createElement("div", {
+    style: {
+      padding: '8px 16px',
+      borderTop: '1px solid var(--border)',
+      background: isDryRun ? 'rgba(210,153,34,0.04)' : 'rgba(88,166,255,0.04)'
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      marginBottom: 6
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: 'flex',
+      alignItems: 'center',
+      gap: 6
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 9,
+      color: 'var(--text-secondary)',
+      textTransform: 'uppercase',
+      letterSpacing: '0.08em'
+    }
+  }, llm.title || 'LLM 解读'), isRealLLM && /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 8,
+      padding: '1px 5px',
+      borderRadius: 3,
+      background: 'rgba(63,185,80,0.15)',
+      color: 'var(--accent-bullish)',
+      fontFamily: "'IBM Plex Mono', monospace"
+    }
+  }, "AI"), isDryRun && /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 8,
+      padding: '1px 5px',
+      borderRadius: 3,
+      background: 'rgba(210,153,34,0.15)',
+      color: 'var(--accent-degraded)',
+      fontFamily: "'IBM Plex Mono', monospace"
+    }
+  }, "\u6A21\u62DF")), llm.generated_at && /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 9,
+      color: 'var(--text-secondary)'
+    }
+  }, new Date(llm.generated_at).toLocaleString('zh-CN', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit'
+  }))), hasV2Structure ? /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: 'flex',
+      flexDirection: 'column',
+      gap: 8
+    }
+  }, (() => {
+    const evidenceUsed = normalizeList(llm.evidence_used);
+    return evidenceUsed.length > 0 && /*#__PURE__*/React.createElement("div", {
+      style: {
+        display: 'flex',
+        flexWrap: 'wrap',
+        gap: 4
+      }
+    }, evidenceUsed.slice(0, 3).map((ev, i) => /*#__PURE__*/React.createElement("span", {
+      key: i,
+      style: {
+        fontSize: 10,
+        padding: '2px 7px',
+        borderRadius: 3,
+        background: 'rgba(88,166,255,0.1)',
+        color: 'var(--accent-live)',
+        fontFamily: "'IBM Plex Mono', monospace"
+      }
+    }, ev)));
+  })(), llm.text && /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12,
+      color: 'var(--text-primary)',
+      lineHeight: 1.6,
+      borderTop: '1px solid var(--border)',
+      paddingTop: 6
+    }
+  }, llm.text), (card.risk_anchors && card.risk_anchors.invalidation_level && card.risk_anchors.invalidation_level.value !== null || card.risk_anchors && card.risk_anchors.key_support && card.risk_anchors.key_support.length > 0 && card.risk_anchors.key_support[0].value !== null || card.risk_anchors && card.risk_anchors.key_resistance && card.risk_anchors.key_resistance.length > 0 && card.risk_anchors.key_resistance[0].value !== null || llm.confirmation_conditions || llm.risk_note) && /*#__PURE__*/React.createElement("div", {
+    style: {
+      borderTop: '1px solid var(--border)',
+      paddingTop: 6,
+      marginTop: 4
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 9,
+      color: 'var(--text-secondary)',
+      marginBottom: 5,
+      textTransform: 'uppercase',
+      letterSpacing: '0.08em'
+    }
+  }, "\u786E\u8BA4\u4E0E\u98CE\u9669"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 11
+    }
+  }, card.risk_anchors && card.risk_anchors.invalidation_level && card.risk_anchors.invalidation_level.value !== null && /*#__PURE__*/React.createElement("div", {
+    style: {
+      marginBottom: 2
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      color: 'var(--accent-bearish)',
+      fontFamily: "'IBM Plex Mono', monospace"
+    }
+  }, "\u5931\u6548 "), /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontFamily: "'IBM Plex Mono', monospace",
+      color: 'var(--text-primary)'
+    }
+  }, card.risk_anchors.invalidation_level.value)), card.risk_anchors && card.risk_anchors.key_support && card.risk_anchors.key_support.length > 0 && card.risk_anchors.key_support[0].value !== null && /*#__PURE__*/React.createElement("div", {
+    style: {
+      marginBottom: 2
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      color: 'var(--accent-bullish)'
+    }
+  }, "\u652F\u6491 "), /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontFamily: "'IBM Plex Mono', monospace"
+    }
+  }, card.risk_anchors.key_support.map(s => s.value).join(', '))), card.risk_anchors && card.risk_anchors.key_resistance && card.risk_anchors.key_resistance.length > 0 && card.risk_anchors.key_resistance[0].value !== null && /*#__PURE__*/React.createElement("div", {
+    style: {
+      marginBottom: 2
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      color: 'var(--accent-bearish)'
+    }
+  }, "\u963B\u529B "), /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontFamily: "'IBM Plex Mono', monospace"
+    }
+  }, card.risk_anchors.key_resistance.map(r => r.value).join(', '))), llm.confirmation_conditions && /*#__PURE__*/React.createElement("div", {
+    style: {
+      marginBottom: 2
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      color: 'var(--accent-neutral)',
+      fontFamily: "'IBM Plex Mono', monospace"
+    }
+  }, llm.pattern_status === 'no_clear_pattern' ? '后续观察' : '确认条件'), /*#__PURE__*/React.createElement("span", {
+    style: {
+      color: 'var(--text-secondary)'
+    }
+  }, llm.confirmation_conditions)), llm.risk_note && /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("span", {
+    style: {
+      color: 'var(--accent-bearish)',
+      fontFamily: "'IBM Plex Mono', monospace"
+    }
+  }, "\u98CE\u9669\u63D0\u793A "), /*#__PURE__*/React.createElement("span", {
+    style: {
+      color: 'var(--text-secondary)'
+    }
+  }, llm.risk_note)))), (() => {
+    const watchItems = normalizeList(llm.watch_items);
+    return watchItems.length > 0 && /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 10,
+        color: 'var(--text-secondary)',
+        borderTop: '1px solid var(--border)',
+        paddingTop: 4
+      }
+    }, /*#__PURE__*/React.createElement("span", {
+      style: {
+        color: 'var(--accent-neutral)',
+        fontFamily: "'IBM Plex Mono', monospace"
+      }
+    }, "\u89C2\u5BDF "), watchItems.join(' · '));
+  })()) :
+  /*#__PURE__*/
+  /* Fallback for dry_run or cards without v2 structure */
+  React.createElement("div", {
+    style: {
+      fontSize: 12,
+      color: 'var(--text-primary)',
+      lineHeight: 1.6
+    }
+  }, llm.text));
+}
+
+// ─── BenchmarkCard ──────────────────────────────────────────────────────
+function BenchmarkCard({
+  card,
+  chartSeries
+}) {
+  const {
+    analytics,
+    signal_summary,
+    risk_anchors,
+    status_tags
+  } = card;
+  const isPending = status_tags && status_tags.includes && status_tags.includes('PENDING_PHASE_U');
+  return /*#__PURE__*/React.createElement("div", {
+    style: {
+      background: 'var(--bg-card)',
+      borderRadius: 8,
+      border: '1px solid var(--border)',
+      overflow: 'hidden',
+      position: 'relative',
+      boxShadow: isPending ? 'inset 3px 0 0 var(--pending)' : 'none'
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      padding: '12px 14px',
+      borderBottom: '1px solid var(--border)',
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'flex-start',
+      gap: 8
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      flex: 1,
+      minWidth: 0
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 13,
+      fontWeight: 600,
+      fontFamily: "'IBM Plex Mono', monospace",
+      marginBottom: 2,
+      whiteSpace: 'nowrap',
+      overflow: 'hidden',
+      textOverflow: 'ellipsis'
+    }
+  }, BENCHMARK_CARD_TITLE_MAP[card.title] || card.title), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 10,
+      color: 'var(--text-secondary)'
+    }
+  }, CARD_SUBTITLE_MAP[card.subtitle] || card.subtitle)), /*#__PURE__*/React.createElement(StatusBadge, {
+    tag: analytics.status_tag
+  })), /*#__PURE__*/React.createElement("div", {
+    style: {
+      padding: '6px 6px 0'
+    }
+  }, /*#__PURE__*/React.createElement(MainChart, {
+    seriesRef: card.chart.primary_series_ref,
+    chartSeries: chartSeries
+  })), /*#__PURE__*/React.createElement("div", {
+    style: {
+      padding: '10px 14px',
+      borderTop: '1px solid var(--border)'
+    }
+  }, /*#__PURE__*/React.createElement(SignalSummaryDisplay, {
+    card: card
+  })), /*#__PURE__*/React.createElement(RiskAnchorsDisplay, {
+    card: card
+  }), /*#__PURE__*/React.createElement(MarketContextDisplay, {
+    card: card
+  }), /*#__PURE__*/React.createElement(LLMEnrichmentDisplay, {
+    card: card
+  }), !card.llm_analysis && card.one_liner && /*#__PURE__*/React.createElement("div", {
+    style: {
+      padding: '8px 14px',
+      borderTop: '1px solid var(--border)',
+      fontSize: 11,
+      color: 'var(--text-secondary)',
+      lineHeight: 1.5,
+      fontStyle: 'italic'
+    }
+  }, card.one_liner));
+}
+
+// ─── SpreadChart (Chart.js line) ────────────────────────────────────────
+function SpreadChart({
+  seriesData
+}) {
+  const canvasRef = useRef(null);
+  const chartRef = useRef(null);
+  useEffect(() => {
+    if (!canvasRef.current || !seriesData || seriesData.length === 0) return;
+    if (chartRef.current) {
+      chartRef.current.destroy();
+      chartRef.current = null;
+    }
+    const ctx = canvasRef.current.getContext('2d');
+    chartRef.current = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: seriesData.map(d => {
+          const d2 = new Date(d.time * 1000);
+          return `${d2.getMonth() + 1}/${d2.getDate()}`;
+        }),
+        datasets: [{
+          data: seriesData.map(d => d.value),
+          borderColor: CHART_COLORS.neutral,
+          backgroundColor: 'rgba(232,197,71,0.08)',
+          fill: true,
+          tension: 0.4,
+          pointRadius: 2,
+          pointBackgroundColor: CHART_COLORS.neutral,
+          borderWidth: 1.5
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false
+          },
+          tooltip: {
+            mode: 'index',
+            intersect: false
+          }
+        },
+        scales: {
+          x: {
+            grid: {
+              color: CHART_COLORS.grid
+            },
+            ticks: {
+              color: CHART_COLORS.chartText,
+              maxTicksLimit: 6,
+              font: {
+                size: 10
+              }
+            }
+          },
+          y: {
+            grid: {
+              color: CHART_COLORS.grid
+            },
+            ticks: {
+              color: CHART_COLORS.chartText,
+              font: {
+                size: 10
+              }
+            }
+          }
+        }
+      }
+    });
+    return () => {
+      if (chartRef.current) {
+        chartRef.current.destroy();
+        chartRef.current = null;
+      }
+    };
+  }, [seriesData]);
+  if (!seriesData || seriesData.length === 0) {
+    return /*#__PURE__*/React.createElement("div", {
+      style: {
+        height: 180,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        color: 'var(--text-secondary)',
+        fontSize: 12
+      }
+    }, "\u6682\u65E0\u4EF7\u5DEE\u6570\u636E");
+  }
+  return /*#__PURE__*/React.createElement("canvas", {
+    ref: canvasRef,
+    style: {
+      height: 180
+    }
+  });
+}
+
+// ─── SpreadCard ──────────────────────────────────────────────────────────
+function SpreadCard({
+  card,
+  chartSeries
+}) {
+  const {
+    analytics,
+    signal_summary,
+    status_tags
+  } = card;
+  const isPending = status_tags && status_tags.includes && status_tags.includes('PENDING_PHASE_U');
+  const pattern = signal_summary && signal_summary.current_pattern;
+  const biasColors = {
+    wti_stronger: 'var(--accent-bullish)',
+    brent_stronger: 'var(--accent-bearish)',
+    neutral: 'var(--text-secondary)'
+  };
+  return /*#__PURE__*/React.createElement("div", {
+    style: {
+      background: 'var(--bg-card)',
+      borderRadius: 8,
+      border: '1px solid var(--border)',
+      overflow: 'hidden',
+      position: 'relative',
+      boxShadow: isPending ? 'inset 3px 0 0 var(--pending)' : 'none'
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      padding: '12px 14px',
+      borderBottom: '1px solid var(--border)',
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'flex-start',
+      gap: 8
+    }
+  }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 14,
+      fontWeight: 600,
+      fontFamily: "'IBM Plex Mono', monospace"
+    }
+  }, card.title), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 11,
+      color: 'var(--text-secondary)',
+      marginTop: 2
+    }
+  }, card.subtitle)), /*#__PURE__*/React.createElement(StatusBadge, {
+    tag: status_tags && status_tags.includes && status_tags.includes('spread') ? 'NOMINAL' : null
+  })), /*#__PURE__*/React.createElement("div", {
+    style: {
+      padding: '6px 6px 0'
+    }
+  }, /*#__PURE__*/React.createElement(SpreadChart, {
+    seriesData: chartSeries && chartSeries.data
+  })), signal_summary && (!card.llm_analysis || card.llm_analysis.validation_status !== 'passed') && /*#__PURE__*/React.createElement("div", {
+    style: {
+      padding: '10px 14px',
+      borderTop: '1px solid var(--border)'
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 9,
+      color: 'var(--text-secondary)',
+      textTransform: 'uppercase',
+      letterSpacing: '0.08em',
+      marginBottom: 6
+    }
+  }, "\u7ED3\u6784 / \u4FE1\u53F7"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: 'grid',
+      gridTemplateColumns: '1fr 1fr',
+      gap: 8
+    }
+  }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 9,
+      color: 'var(--text-secondary)',
+      marginBottom: 3
+    }
+  }, "\u5F62\u6001"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12,
+      fontFamily: "'IBM Plex Mono', monospace"
+    }
+  }, pattern ? pattern.label : '—')), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 9,
+      color: 'var(--text-secondary)',
+      marginBottom: 3
+    }
+  }, "\u76F8\u5BF9\u5F3A\u5EA6"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12,
+      color: biasColors[pattern && pattern.direction_bias] || 'var(--text-secondary)',
+      fontFamily: "'IBM Plex Mono', monospace"
+    }
+  }, pattern ? pattern.direction_bias : '—')), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 9,
+      color: 'var(--text-secondary)',
+      marginBottom: 3
+    }
+  }, "\u786E\u8BA4"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12,
+      color: signal_summary.confirmation_status.value === 'confirmed' ? 'var(--accent-bullish)' : 'var(--accent-neutral)',
+      fontFamily: "'IBM Plex Mono', monospace"
+    }
+  }, signal_summary.confirmation_status.label)), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 9,
+      color: 'var(--text-secondary)',
+      marginBottom: 3
+    }
+  }, "\u533A\u57DF"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12,
+      color: 'var(--text-secondary)',
+      fontFamily: "'IBM Plex Mono', monospace"
+    }
+  }, signal_summary.location_context && signal_summary.location_context.zone_type ? signal_summary.location_context.zone_type : '—')))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      padding: '10px 14px',
+      borderTop: '1px solid var(--border)',
+      display: 'grid',
+      gridTemplateColumns: 'repeat(4, 1fr)',
+      gap: 8
+    }
+  }, [{
+    label: '价差',
+    value: analytics.spread_value != null ? analytics.spread_value.toFixed(2) : '—'
+  }, {
+    label: 'Z-Score',
+    value: analytics.z_score != null ? analytics.z_score.toFixed(2) : '—'
+  }, {
+    label: '区间位置',
+    value: analytics.range_position_pct != null ? `${(analytics.range_position_pct * 100).toFixed(2)}%` : '—'
+  }, {
+    label: '波动状态',
+    value: analytics.volatility_state || '—'
+  }].map(item => /*#__PURE__*/React.createElement("div", {
+    key: item.label
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 9,
+      color: 'var(--text-secondary)',
+      marginBottom: 2
+    }
+  }, item.label), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 13,
+      fontFamily: "'IBM Plex Mono', monospace",
+      fontWeight: 600
+    }
+  }, item.value)))), !card.llm_analysis && card.one_liner && /*#__PURE__*/React.createElement("div", {
+    style: {
+      padding: '8px 14px',
+      borderTop: '1px solid var(--border)',
+      fontSize: 11,
+      color: 'var(--text-secondary)',
+      lineHeight: 1.5,
+      fontStyle: 'italic'
+    }
+  }, card.one_liner));
+}
+
+// ─── TermCurveChart (Chart.js grouped bar — current截面 only) ─────────────
+function TermCurveChart({
+  card
+}) {
+  const canvasRef = useRef(null);
+  const chartRef = useRef(null);
+  const {
+    analytics,
+    status_tags
+  } = card;
+  const hasQuarter = analytics.near_quarter_spread !== null;
+  const labels = hasQuarter ? ['Near', 'Next', 'Quarter'] : ['Near', 'Next'];
+  const values = hasQuarter ? [analytics.near_next_spread, analytics.near_next_spread, analytics.near_quarter_spread] : [analytics.near_next_spread, analytics.near_next_spread];
+  const bgColors = hasQuarter ? [CHART_COLORS.bullish, CHART_COLORS.live, CHART_COLORS.pending] : [CHART_COLORS.bullish, CHART_COLORS.live];
+  useEffect(() => {
+    if (!canvasRef.current) return;
+    if (chartRef.current) {
+      chartRef.current.destroy();
+      chartRef.current = null;
+    }
+    const ctx = canvasRef.current.getContext('2d');
+    chartRef.current = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [{
+          data: values,
+          backgroundColor: bgColors,
+          borderColor: bgColors,
+          borderWidth: 1
+        }]
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false
+          }
+        },
+        scales: {
+          x: {
+            grid: {
+              color: CHART_COLORS.grid
+            },
+            ticks: {
+              color: CHART_COLORS.chartText,
+              font: {
+                size: 10
+              }
+            }
+          },
+          y: {
+            grid: {
+              color: CHART_COLORS.grid
+            },
+            ticks: {
+              color: CHART_COLORS.chartText,
+              font: {
+                size: 10
+              }
+            }
+          }
+        }
+      }
+    });
+    return () => {
+      if (chartRef.current) {
+        chartRef.current.destroy();
+        chartRef.current = null;
+      }
+    };
+  }, [analytics]);
+  return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("canvas", {
+    ref: canvasRef,
+    style: {
+      height: 140
+    }
+  }), !hasQuarter && /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 10,
+      color: 'var(--pending)',
+      marginTop: 6,
+      textAlign: 'center'
+    }
+  }, "\u5F85\u5B9A \u2014 \u5B63\u5EA6\u5408\u7EA6\u4E0D\u53EF\u7528"));
+}
+
+// ─── TermCurveCard ──────────────────────────────────────────────────────
+function TermCurveCard({
+  card
+}) {
+  const {
+    analytics,
+    status_tags
+  } = card;
+  const isPending = status_tags && status_tags.includes && status_tags.includes('PENDING_PHASE_U');
+  const hasQuarter = analytics.near_quarter_spread !== null;
+  const curveStateColor = analytics.curve_state === 'backwardation' ? 'var(--accent-bearish)' : analytics.curve_state === 'contango' ? 'var(--accent-bullish)' : 'var(--text-secondary)';
+  return /*#__PURE__*/React.createElement("div", {
+    style: {
+      background: 'var(--bg-card)',
+      borderRadius: 8,
+      border: '1px solid var(--border)',
+      overflow: 'hidden',
+      position: 'relative',
+      boxShadow: isPending ? 'inset 3px 0 0 var(--pending)' : 'none'
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      padding: '12px 14px',
+      borderBottom: '1px solid var(--border)',
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'flex-start',
+      gap: 8
+    }
+  }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 14,
+      fontWeight: 600,
+      fontFamily: "'IBM Plex Mono', monospace"
+    }
+  }, card.title), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 11,
+      color: 'var(--text-secondary)',
+      marginTop: 2
+    }
+  }, card.subtitle)), /*#__PURE__*/React.createElement(StatusBadge, {
+    tag: isPending ? 'PENDING_PHASE_U' : 'NOMINAL'
+  })), /*#__PURE__*/React.createElement("div", {
+    style: {
+      padding: '6px 6px 0'
+    }
+  }, /*#__PURE__*/React.createElement(TermCurveChart, {
+    card: card
+  })), /*#__PURE__*/React.createElement("div", {
+    style: {
+      padding: '10px 14px',
+      borderTop: '1px solid var(--border)'
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 9,
+      color: 'var(--text-secondary)',
+      textTransform: 'uppercase',
+      letterSpacing: '0.08em',
+      marginBottom: 6
+    }
+  }, "\u7ED3\u6784 / \u4FE1\u53F7"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: 'grid',
+      gridTemplateColumns: '1fr 1fr',
+      gap: 8
+    }
+  }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 9,
+      color: 'var(--text-secondary)',
+      marginBottom: 3
+    }
+  }, "\u66F2\u7EBF\u72B6\u6001"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12,
+      color: curveStateColor,
+      fontFamily: "'IBM Plex Mono', monospace",
+      fontWeight: 600
+    }
+  }, CURVE_STATE_MAP[analytics.curve_state] || analytics.curve_state || '—')), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 9,
+      color: 'var(--text-secondary)',
+      marginBottom: 3
+    }
+  }, "\u671F\u9650\u7ED3\u6784"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12,
+      color: 'var(--text-secondary)',
+      fontFamily: "'IBM Plex Mono', monospace"
+    }
+  }, hasQuarter ? '3 条腿' : '2 条腿 (无季度)')), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 9,
+      color: 'var(--text-secondary)',
+      marginBottom: 3
+    }
+  }, "\u8FD1\u6B21\u6708\u5DEE"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12,
+      color: 'var(--text-primary)',
+      fontFamily: "'IBM Plex Mono', monospace"
+    }
+  }, analytics.near_next_spread != null ? analytics.near_next_spread.toFixed(2) : '—')), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 9,
+      color: 'var(--text-secondary)',
+      marginBottom: 3
+    }
+  }, "\u8FD1\u5B63\u6708\u5DEE"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12,
+      color: hasQuarter ? 'var(--text-primary)' : 'var(--pending)',
+      fontFamily: "'IBM Plex Mono', monospace"
+    }
+  }, hasQuarter ? analytics.near_quarter_spread.toFixed(2) : '— (待定)')))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      padding: '10px 14px',
+      borderTop: '1px solid var(--border)',
+      display: 'grid',
+      gridTemplateColumns: '1fr 1fr',
+      gap: 8
+    }
+  }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 9,
+      color: 'var(--text-secondary)',
+      marginBottom: 2
+    }
+  }, "3\u65E5\u53D8\u5316"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 13,
+      fontFamily: "'IBM Plex Mono', monospace",
+      fontWeight: 600,
+      color: analytics.curve_change_3d === null ? 'var(--pending)' : 'inherit'
+    }
+  }, analytics.curve_change_3d === null ? '— (待定)' : analytics.curve_change_3d.toFixed(2))), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 9,
+      color: 'var(--text-secondary)',
+      marginBottom: 2
+    }
+  }, "\u6570\u636E\u72B6\u6001"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 13,
+      fontFamily: "'IBM Plex Mono', monospace",
+      fontWeight: 600,
+      color: 'var(--accent-degraded)'
+    }
+  }, isPending ? STATUS_BADGE_LABEL_MAP['PENDING_PHASE_U'] : STATUS_BADGE_LABEL_MAP['NOMINAL']))), /*#__PURE__*/React.createElement(LLMEnrichmentDisplay, {
+    card: card
+  }));
+}
+
+// ─── HomepagePage ────────────────────────────────────────────────────────
+function HomepagePage({
+  payload
+}) {
+  const {
+    page_meta,
+    overview_strip,
+    sections,
+    methodology_strip,
+    chart_series,
+    market_intelligence,
+    generated_at
+  } = payload;
+  const benchmarkSection = sections.find(s => s.section_id === 'benchmark_cards');
+  const structureSection = sections.find(s => s.section_id === 'structure_cards');
+  const marketBrief = market_intelligence && market_intelligence.market_brief;
+  const scenarioAnalysis = market_intelligence && market_intelligence.scenario_analysis;
+  const buildTimeStr = (() => {
+    if (!generated_at) return null;
+    const d = new Date(generated_at);
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    const hh = String(d.getHours()).padStart(2, '0');
+    const mm = String(d.getMinutes()).padStart(2, '0');
+    return `${y}/${m}/${day} ${hh}:${mm}`;
+  })();
+  return /*#__PURE__*/React.createElement("div", {
+    style: {
+      minHeight: '100vh',
+      paddingBottom: 32
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      padding: '20px 24px 0'
+    }
+  }, /*#__PURE__*/React.createElement("h1", {
+    style: {
+      fontSize: 18,
+      fontWeight: 600,
+      fontFamily: "'IBM Plex Mono', monospace",
+      letterSpacing: '-0.01em'
+    }
+  }, PAGE_META_MAP[page_meta.title] || page_meta.title), /*#__PURE__*/React.createElement("p", {
+    style: {
+      fontSize: 12,
+      color: 'var(--text-secondary)',
+      marginTop: 4,
+      maxWidth: 600
+    }
+  }, PAGE_META_MAP[page_meta.subtitle] || page_meta.subtitle, buildTimeStr && /*#__PURE__*/React.createElement("span", {
+    style: {
+      marginLeft: 12,
+      fontSize: 11
+    }
+  }, "\u66F4\u65B0\u4E8E ", buildTimeStr))), /*#__PURE__*/React.createElement(OverviewStrip, {
+    strip: overview_strip,
+    eventRisk: payload.event_risk_monitor || payload.market_intelligence && payload.market_intelligence.event_risk_monitor
+  }), /*#__PURE__*/React.createElement("style", null, `
+            .market-intelligence-grid {
+              display: grid;
+              grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr);
+              gap: 16px;
+              align-items: stretch;
+              padding: 16px 24px 0;
+            }
+            @media (max-width: 1100px) {
+              .market-intelligence-grid {
+                grid-template-columns: 1fr;
+              }
+            }
+          `), /*#__PURE__*/React.createElement("div", {
+    className: "market-intelligence-grid"
+  }, /*#__PURE__*/React.createElement(MarketBriefSection, {
+    market_brief: marketBrief
+  }), /*#__PURE__*/React.createElement(EventRiskMonitor, {
+    data: payload.event_risk_monitor || payload.market_intelligence && payload.market_intelligence.event_risk_monitor,
+    compact: true
+  })), benchmarkSection ? /*#__PURE__*/React.createElement("div", {
+    style: {
+      padding: '20px 24px 0'
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 10,
+      color: 'var(--text-secondary)',
+      textTransform: 'uppercase',
+      letterSpacing: '0.1em',
+      marginBottom: 12,
+      display: 'flex',
+      alignItems: 'center',
+      gap: 8
+    }
+  }, /*#__PURE__*/React.createElement("span", null, SECTION_TITLE_MAP[benchmarkSection.title] || benchmarkSection.title), /*#__PURE__*/React.createElement("span", {
+    style: {
+      flex: 1,
+      height: 1,
+      background: 'var(--border)'
+    }
+  })), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: 'grid',
+      gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+      gap: 16
+    }
+  }, benchmarkSection.cards.map(card => /*#__PURE__*/React.createElement(BenchmarkCard, {
+    key: card.id,
+    card: card,
+    chartSeries: chart_series && chart_series[card.chart.primary_series_ref]
+  })))) : /*#__PURE__*/React.createElement("div", {
+    style: {
+      padding: 20,
+      color: 'var(--text-secondary)'
+    }
+  }, "Loading benchmark data\u2026"), structureSection ? /*#__PURE__*/React.createElement("div", {
+    style: {
+      padding: '20px 24px 0'
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 10,
+      color: 'var(--text-secondary)',
+      textTransform: 'uppercase',
+      letterSpacing: '0.1em',
+      marginBottom: 12,
+      display: 'flex',
+      alignItems: 'center',
+      gap: 8
+    }
+  }, /*#__PURE__*/React.createElement("span", null, SECTION_TITLE_MAP[structureSection.title] || structureSection.title), /*#__PURE__*/React.createElement("span", {
+    style: {
+      flex: 1,
+      height: 1,
+      background: 'var(--border)'
+    }
+  })), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: 'grid',
+      gridTemplateColumns: 'repeat(auto-fit, minmax(380px, 1fr))',
+      gap: 16
+    }
+  }, structureSection.cards.map(card => {
+    if (card.id === 'brent_wti_spread') {
+      return /*#__PURE__*/React.createElement(SpreadCard, {
+        key: card.id,
+        card: card,
+        chartSeries: chart_series && chart_series['series_brent_wti_spread_1d']
+      });
+    }
+    if (card.id === 'sc_term_structure') {
+      return /*#__PURE__*/React.createElement(TermCurveCard, {
+        key: card.id,
+        card: card
+      });
+    }
+    return null;
+  }))) : null, /*#__PURE__*/React.createElement(ScenarioAnalysisSection, {
+    scenario_analysis: scenarioAnalysis
+  }), /*#__PURE__*/React.createElement(MethodologyDetailSection, null));
+}
+
+// ─── App ────────────────────────────────────────────────────────────────
+function App() {
+  const [payload, setPayload] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  useEffect(() => {
+    fetch('./homepage_payload.json').then(r => {
+      if (!r.ok) throw new Error(`HTTP ${r.status}`);
+      return r.json();
+    }).then(data => {
+      setPayload(data);
+      setLoading(false);
+    }).catch(e => {
+      setError(e.message);
+      setLoading(false);
+    });
+  }, []);
+  if (loading) return /*#__PURE__*/React.createElement("div", {
+    style: {
+      height: '100vh',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      flexDirection: 'column',
+      gap: 12
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      width: 32,
+      height: 32,
+      border: '2px solid var(--border)',
+      borderTopColor: 'var(--accent-neutral)',
+      borderRadius: '50%',
+      animation: 'spin 0.8s linear infinite'
+    }
+  }), /*#__PURE__*/React.createElement("div", {
+    style: {
+      color: 'var(--text-secondary)',
+      fontSize: 13
+    }
+  }, "\u6B63\u5728\u52A0\u8F7D\u539F\u6CB9\u5E02\u573A\u4EEA\u8868\u76D8..."), /*#__PURE__*/React.createElement("style", null, `@keyframes spin { to { transform: rotate(360deg); } }`));
+  if (error) return /*#__PURE__*/React.createElement("div", {
+    style: {
+      height: '100vh',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      flexDirection: 'column',
+      gap: 8
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 24,
+      fontFamily: "'IBM Plex Mono', monospace",
+      color: 'var(--accent-bearish)'
+    }
+  }, "\u52A0\u8F7D\u5931\u8D25"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 13,
+      color: 'var(--text-secondary)'
+    }
+  }, error), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12,
+      color: 'var(--text-secondary)',
+      marginTop: 8
+    }
+  }, "Make sure to: ", /*#__PURE__*/React.createElement("code", {
+    style: {
+      color: 'var(--accent-neutral)'
+    }
+  }, "python -m http.server 8080"), " and place homepage_payload.json in the frontend/ directory"));
+  if (!payload) return null;
+  return /*#__PURE__*/React.createElement(HomepagePage, {
+    payload: payload
+  });
+}
+ReactDOM.createRoot(document.getElementById('root')).render(/*#__PURE__*/React.createElement(App, null));
+  </script>
+</body>
+</html>
